@@ -1,4 +1,4 @@
-import sourceUrl from '../../Chinese-teaching.txt?url';
+import sourceUrl from './Chinese-teaching.txt?url';
 
 const containsHan = (value) => /\p{Script=Han}/u.test(value);
 const frenchSignals = /\b(?:le|la|les|des|une?|du|dans|cette?|est|sont|décrit|désigne|signifie|par exemple|ainsi|avec|pour|qui|l['’]|d['’])\b/giu;
