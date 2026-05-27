@@ -1,5 +1,5 @@
-const DEFAULT_SCRIPT_SRC = import.meta.env.VITE_UMAMI_SCRIPT_SRC?.trim();
-const DEFAULT_WEBSITE_ID = import.meta.env.VITE_UMAMI_WEBSITE_ID?.trim();
+const DEFAULT_SCRIPT_SRC = import.meta.env.VITE_UMAMI_SCRIPT_SRC?.trim() || 'https://cloud.umami.is/script.js';
+const DEFAULT_WEBSITE_ID = import.meta.env.VITE_UMAMI_WEBSITE_ID?.trim() || '955da1bd-cc90-4cee-88ee-1ac182d6cb42';
 const DEFAULT_HOST_URL = import.meta.env.VITE_UMAMI_HOST_URL?.trim();
 const ENABLED = import.meta.env.PROD && Boolean(DEFAULT_SCRIPT_SRC && DEFAULT_WEBSITE_ID);
 
