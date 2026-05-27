@@ -9,7 +9,6 @@ import ExpressionCard from './components/ExpressionCard.jsx';
 import Pagination from './components/Pagination.jsx';
 import useTheme from './hooks/useTheme.js';
 import useCardPersistence, { applyEditedFields } from './hooks/useCardPersistence.js';
-import useUmamiAnalytics from './hooks/useUmamiAnalytics.js';
 
 const pageSize = 24;
 const searchCharacterMap = {
@@ -33,8 +32,6 @@ function matchesQuery(entry, query) {
 }
 
 export default function App() {
-  useUmamiAnalytics();
-
   const [query, setQuery] = useState('');
   const [locale, setLocale] = useState('zh');
   const [currentPage, setCurrentPage] = useState(1);

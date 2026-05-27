@@ -17,7 +17,8 @@ If you are developing a production application, we recommend using TypeScript wi
 
 ## Analytics
 
-This app includes an Umami Analytics hook that loads the tracker script in production only.
+This app includes Umami Analytics via a script tag in `src/index.html`.
+Umami automatically tracks SPA pageviews when the script is loaded once in the root layout.
 
 Set these environment variables before building or deploying:
 
