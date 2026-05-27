@@ -14,3 +14,13 @@ The React Compiler is not enabled on this template because of its impact on dev 
 ## Expanding the ESLint configuration
 
 If you are developing a production application, we recommend using TypeScript with type-aware lint rules enabled. Check out the [TS template](https://github.com/vitejs/vite/tree/main/packages/create-vite/template-react-ts) for information on how to integrate TypeScript and [`typescript-eslint`](https://typescript-eslint.io) in your project.
+
+## Analytics
+
+This app includes an Umami Analytics hook that loads the tracker script in production only.
+
+Set these environment variables before building or deploying:
+
+- `VITE_UMAMI_SCRIPT_SRC`
+- `VITE_UMAMI_WEBSITE_ID`
+- `VITE_UMAMI_HOST_URL` (optional)
