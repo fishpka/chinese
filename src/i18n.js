@@ -21,7 +21,7 @@ export const copy = {
     themeDark: '切換為深色模式',
     heroLabel: '語感反查 / 卷一',
     heroAccent: 'but Chinese nuance.',
-    heroBody: '從一種說不清楚的感覺出發，找到它在中文裡更準確、更有溫度的落點。不是字典，而是一份可閱讀的語感索引。',
+    heroBody: '不知道該怎麼形容那種感覺？從情緒出發，找到中文裡更貼近的詞語與語感。這是一個好用的中文語感工具。',
     verse: '情生於辭間',
     methodLabel: '尋詞方式',
     method: '寫下一刻的感受、文化意象或一句記憶中的話。語境將從教學資料中尋回相關詞目。',
