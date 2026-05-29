@@ -4,11 +4,13 @@ import { loadTeachingDatabase } from './data/teachingDatabase.js';
 import { copy, searchPrompts } from './i18n.js';
 import Header from './components/Header.jsx';
 import Hero from './components/Hero.jsx';
+import DailyWord from './components/DailyWord.jsx';
 import SearchPanel from './components/SearchPanel.jsx';
 import ExpressionCard from './components/ExpressionCard.jsx';
 import Pagination from './components/Pagination.jsx';
 import useTheme from './hooks/useTheme.js';
 import useCardPersistence, { applyEditedFields } from './hooks/useCardPersistence.js';
+import { selectDailyEntry } from './lib/dailyWord.js';
 
 const pageSize = 24;
 const searchCharacterMap = {
@@ -44,6 +46,7 @@ export default function App() {
     () => database.entries.filter((entry) => matchesQuery(entry, query)),
     [database.entries, query],
   );
+  const dailyEntry = useMemo(() => selectDailyEntry(database.entries), [database.entries]);
   const totalPages = Math.max(1, Math.ceil(results.length / pageSize));
   const visiblePage = Math.min(currentPage, totalPages);
   const pageResults = results.slice((visiblePage - 1) * pageSize, visiblePage * pageSize);
@@ -100,6 +103,13 @@ export default function App() {
     setCurrentPage(1);
   }
 
+  function handleDailyWordExplore(term) {
+    handleQueryChange(term);
+    window.requestAnimationFrame(() => {
+      document.getElementById('explore')?.scrollIntoView({ behavior: reduceMotion ? 'auto' : 'smooth', block: 'start' });
+    });
+  }
+
   return (
     <div className="min-h-screen bg-canvas text-ink transition-colors duration-500 dark:bg-night dark:text-moon">
       <Header
@@ -110,6 +120,14 @@ export default function App() {
         onThemeToggle={toggleTheme}
       />
       <main>
+        {!database.loading && (
+          <DailyWord
+            entry={dailyEntry}
+            locale={locale}
+            messages={messages}
+            onExplore={handleDailyWordExplore}
+          />
+        )}
         <Hero messages={messages} />
 
         <motion.section
