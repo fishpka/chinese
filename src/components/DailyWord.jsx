@@ -7,10 +7,37 @@ const categoryLabels = {
   fr: { 成語: 'Expression', 典故: 'Allusion', 文化詞彙: 'Terme culturel' },
 };
 
-export default function DailyWord({ entry, locale, messages, onExplore }) {
+export default function DailyWord({ entry, locale, messages, loading = false, onExplore }) {
   const reduceMotion = useReducedMotion();
 
-  if (!entry) return null;
+  if (!loading && !entry) return null;
+
+  if (loading || !entry) {
+    return (
+      <section className="mx-auto max-w-7xl px-5 pt-4 sm:px-8 lg:px-12">
+        <motion.div
+          className="border border-line bg-paper px-5 py-4 shadow-[0_1px_0_rgba(49,45,39,0.04)] dark:border-line-dark dark:bg-panel sm:px-6"
+          initial={reduceMotion ? false : { opacity: 0, y: 8 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: reduceMotion ? 0 : 0.35, ease: [0.16, 1, 0.3, 1] }}
+        >
+          <div className="flex flex-col gap-3 lg:flex-row lg:items-center lg:justify-between">
+            <div>
+              <div className="flex flex-wrap items-center gap-3">
+                <p className="label">{messages.dailyWordLabel}</p>
+                <span className="rounded-full border border-line px-2.5 py-1 text-[10px] tracking-[0.2em] text-muted dark:border-line-dark dark:text-muted-dark">
+                  {messages.dailyWordHint}
+                </span>
+              </div>
+              <p className="mt-3 text-[0.95rem] text-muted dark:text-muted-dark">
+                {messages.dailyWordLoading}
+              </p>
+            </div>
+          </div>
+        </motion.div>
+      </section>
+    );
+  }
 
   const selected = entry.content[locale] || entry.content.zh;
   const example = selected.example || entry.content.zh.example;
