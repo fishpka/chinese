@@ -16,9 +16,9 @@ export default function DailyWord({ entry, locale, messages, onExplore }) {
   const example = selected.example || entry.content.zh.example;
 
   return (
-    <section className="mx-auto max-w-7xl px-5 pt-5 sm:px-8 lg:px-12">
+    <section className="mx-auto max-w-7xl px-5 pt-4 sm:px-8 lg:px-12">
       <motion.div
-        className="border border-line bg-paper px-5 py-4 dark:border-line-dark dark:bg-panel sm:px-6"
+        className="border border-line bg-paper px-5 py-4 shadow-[0_1px_0_rgba(49,45,39,0.04)] dark:border-line-dark dark:bg-panel sm:px-6"
         initial={reduceMotion ? false : { opacity: 0, y: 8 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: reduceMotion ? 0 : 0.35, ease: [0.16, 1, 0.3, 1] }}
@@ -27,26 +27,26 @@ export default function DailyWord({ entry, locale, messages, onExplore }) {
           <div className="min-w-0">
             <div className="flex flex-wrap items-center gap-3">
               <p className="label">{messages.dailyWordLabel}</p>
-              <span className="text-xs tracking-[0.18em] text-muted dark:text-muted-dark">
+              <span className="rounded-full border border-line px-2.5 py-1 text-[10px] tracking-[0.2em] text-muted dark:border-line-dark dark:text-muted-dark">
                 {messages.dailyWordHint}
               </span>
             </div>
             <div className="mt-3 flex flex-wrap items-baseline gap-x-4 gap-y-2">
-              <h2 className="text-2xl font-medium tracking-tight sm:text-3xl">
+              <h2 className="text-[clamp(2rem,4vw,3rem)] font-medium tracking-tight">
                 {entry.editable.term}
               </h2>
               <span className="text-sm text-muted dark:text-muted-dark">
                 {categoryLabels[locale][entry.category]}
               </span>
             </div>
-            <p className="mt-2 max-w-3xl text-sm leading-7 text-muted dark:text-muted-dark">
+            <p className="mt-2 max-w-3xl text-[0.95rem] leading-7 text-muted dark:text-muted-dark">
               {selected.description}
             </p>
           </div>
 
           <button
             type="button"
-            className="inline-flex items-center gap-2 self-start border border-line px-4 py-2 text-sm tracking-[0.08em] text-ink transition-colors hover:border-ink dark:border-line-dark dark:text-moon dark:hover:border-moon"
+            className="inline-flex items-center gap-2 self-start border border-line bg-canvas px-4 py-2 text-sm tracking-[0.08em] text-ink transition-colors hover:border-ink dark:border-line-dark dark:bg-night dark:text-moon dark:hover:border-moon"
             onClick={() => onExplore(entry.term)}
           >
             {messages.dailyWordAction}

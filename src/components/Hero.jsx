@@ -10,7 +10,7 @@ export default function Hero({ messages }) {
   });
 
   return (
-    <section className="hero-section mx-auto grid max-w-7xl gap-12 px-5 pb-18 pt-16 sm:px-8 sm:pt-22 lg:grid-cols-[1fr_20rem] lg:px-12 lg:pb-24 lg:pt-28">
+    <section className="hero-section mx-auto grid max-w-7xl gap-10 px-5 pb-16 pt-12 sm:px-8 sm:pt-18 lg:grid-cols-[1fr_20rem] lg:px-12 lg:pb-22 lg:pt-22">
       <div>
         <motion.p {...reveal(0)} className="label">
           {messages.heroLabel}

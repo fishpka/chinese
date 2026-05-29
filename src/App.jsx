@@ -112,6 +112,14 @@ export default function App() {
 
   return (
     <div className="min-h-screen bg-canvas text-ink transition-colors duration-500 dark:bg-night dark:text-moon">
+      {!database.loading && (
+        <DailyWord
+          entry={dailyEntry}
+          locale={locale}
+          messages={messages}
+          onExplore={handleDailyWordExplore}
+        />
+      )}
       <Header
         locale={locale}
         messages={messages}
@@ -120,14 +128,6 @@ export default function App() {
         onThemeToggle={toggleTheme}
       />
       <main>
-        {!database.loading && (
-          <DailyWord
-            entry={dailyEntry}
-            locale={locale}
-            messages={messages}
-            onExplore={handleDailyWordExplore}
-          />
-        )}
         <Hero messages={messages} />
 
         <motion.section
