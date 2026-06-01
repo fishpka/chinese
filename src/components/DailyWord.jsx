@@ -89,7 +89,7 @@ export default function DailyWord({ entry, locale, messages, loading = false, on
           ))}
         </div>
 
-        <div className="mt-4 grid gap-4 border-t border-line pt-4 dark:border-line-dark sm:grid-cols-2">
+        <div className="mt-4 grid gap-3 border-t border-line pt-4 dark:border-line-dark">
           <p className="text-sm leading-7 text-muted dark:text-muted-dark">
             <span className="label mr-3">{messages.english}</span>
             {entry.editable.english || messages.fallback}
@@ -99,7 +99,7 @@ export default function DailyWord({ entry, locale, messages, loading = false, on
             {entry.editable.french || messages.fallback}
           </p>
           {example && (
-            <p className="sm:col-span-2 text-sm leading-7 text-muted dark:text-muted-dark">
+            <p className="text-sm leading-7 text-muted dark:text-muted-dark">
               <span className="label mr-3">{messages.example}</span>
               {example}
             </p>
