@@ -46,9 +46,9 @@ export default function App() {
   );
   const popularResultWords = useMemo(() => {
     const seen = new Set();
-    return results.reduce((words, entry) => {
+    const uniqueWords = results.reduce((words, entry) => {
       const term = entry.editable.term.trim();
-      if (!term || seen.has(term) || words.length >= 5) return words;
+      if (!term || seen.has(term)) return words;
       seen.add(term);
       words.push({
         query: term,
@@ -58,6 +58,7 @@ export default function App() {
       });
       return words;
     }, []);
+    return uniqueWords.slice(5, 10);
   }, [results]);
   const totalPages = Math.max(1, Math.ceil(results.length / pageSize));
   const visiblePage = Math.min(currentPage, totalPages);
