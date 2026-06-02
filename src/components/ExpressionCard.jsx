@@ -158,8 +158,8 @@ function ReadCard({ entry, example, locale, messages, reduceMotion, onEdit, show
       <dl className="mt-7 space-y-5 text-sm">
         <Detail label={messages.english} text={entry.editable.english || messages.fallback} />
         <Detail label={messages.french} text={entry.editable.french || messages.fallback} />
-        <Detail label={messages.scenario} text={entry.editable.scenario || messages.fallback} clamp />
-        {example && <Detail label={messages.example} text={example} emphasized clamp />}
+        <Detail label={messages.scenario} text={entry.editable.scenario || messages.fallback} />
+        {example && <Detail label={messages.example} text={example} emphasized />}
       </dl>
     </motion.div>
   );
@@ -219,11 +219,11 @@ function Field({ label, value, placeholder, onChange, multiline = false, term = 
   );
 }
 
-function Detail({ label, text, emphasized = false, clamp = false }) {
+function Detail({ label, text, emphasized = false }) {
   return (
     <div className="grid gap-2 sm:grid-cols-[5.5rem_1fr]">
       <dt className="text-xs tracking-[0.14em] text-muted dark:text-muted-dark">{label}</dt>
-      <dd className={`${emphasized ? 'text-ink dark:text-moon' : 'text-muted dark:text-muted-dark'} ${clamp ? 'line-clamp-4' : ''} leading-7`}>
+      <dd className={`${emphasized ? 'text-ink dark:text-moon' : 'text-muted dark:text-muted-dark'} leading-7`}>
         {text}
       </dd>
     </div>

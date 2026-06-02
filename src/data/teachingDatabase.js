@@ -9,10 +9,16 @@ function scoreMatches(value, expression) {
 }
 
 function detectLanguage(line) {
-  if (containsHan(line)) return 'zh';
-
   const frenchScore = scoreMatches(line, frenchSignals) + (/[àâçéèêëîïôùûüœæ]/iu.test(line) ? 3 : 0);
   const englishScore = scoreMatches(line, englishSignals);
+  if (containsHan(line)) {
+    const latinLength = [...line.matchAll(/\p{Script=Latin}/gu)].length;
+    const hanLength = [...line.matchAll(/\p{Script=Han}/gu)].length;
+    const hasSubstantialTranslation = latinLength >= Math.max(18, hanLength * 2);
+
+    if (!hasSubstantialTranslation || (!englishScore && !frenchScore)) return 'zh';
+  }
+
   return frenchScore > englishScore ? 'fr' : 'en';
 }
 
@@ -54,6 +60,21 @@ function splitExample(text, language) {
   };
 }
 
+function fillLocalizedFallbacks(localized) {
+  const descriptionFallback = localized.en.description || localized.zh.description || localized.fr.description;
+  const exampleFallback = localized.en.example || localized.zh.example || localized.fr.example;
+
+  return Object.fromEntries(
+    Object.entries(localized).map(([language, value]) => [
+      language,
+      {
+        description: value.description || descriptionFallback,
+        example: value.example || exampleFallback,
+      },
+    ]),
+  );
+}
+
 function getCategory(term, searchableText) {
   if (/[诗詞歌赋]|诗|poem|poète|唐朝|朝代|典故|myth|histoire/iu.test(searchableText)) return '典故';
   if (term.length === 4) return '成語';
@@ -82,12 +103,12 @@ function parseEntry(block, index) {
   const sections = { zh: [], en: [], fr: [] };
   lines.forEach((line) => sections[detectLanguage(line)].push(line));
 
-  const localized = Object.fromEntries(
+  const localized = fillLocalizedFallbacks(Object.fromEntries(
     Object.entries(sections).map(([language, languageLines]) => [
       language,
       splitExample(languageLines.join(' '), language),
     ]),
-  );
+  ));
   const term = findTerm(lines);
   if (!term) return null;
 
