@@ -14,7 +14,7 @@ export default function Header({ locale, messages, theme, onLocaleChange, onThem
       <div className="mx-auto flex h-17 max-w-7xl items-center justify-between px-5 sm:px-8 lg:px-12">
         <a className="flex items-center gap-3" href={homePath()} aria-label={messages.brandSubtitle}>
           <span className="seal-mark grid size-9 place-items-center text-base font-medium">
-            境
+            <img src={`${import.meta.env.BASE_URL}logo.png`} alt="" className="size-full object-contain" />
           </span>
           <span>
             <span className="block text-base font-medium tracking-[0.3em]">語境</span>
