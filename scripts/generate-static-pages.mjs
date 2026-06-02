@@ -21,6 +21,10 @@ function slugify(value) {
   return encodeURIComponent(String(value).trim());
 }
 
+function routeSegment(value) {
+  return String(value).trim().replaceAll('/', '／');
+}
+
 function escapeXml(value) {
   return String(value)
     .replaceAll('&', '&amp;')
@@ -113,11 +117,10 @@ const entries = parseEntries(sourceText);
 const emotions = [...new Set(entries.flatMap((entry) => [entry.category, ...entry.emotions]))];
 
 await Promise.all([
-  ...entries.map((entry) => writeRoute(`word/${slugify(entry.term)}`, indexHtml)),
-  ...emotions.map((emotion) => writeRoute(`emotion/${slugify(emotion)}`, indexHtml)),
+  ...entries.map((entry) => writeRoute(`word/${routeSegment(entry.term)}`, indexHtml)),
+  ...emotions.map((emotion) => writeRoute(`emotion/${routeSegment(emotion)}`, indexHtml)),
   writeFile(path.join(distDir, '404.html'), indexHtml),
   writeFile(path.join(distDir, 'sitemap.xml'), buildSitemap(entries, emotions)),
 ]);
 
 console.log(`Generated ${entries.length} word pages, ${emotions.length} emotion pages, and sitemap.xml`);
-
