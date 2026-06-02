@@ -6,9 +6,12 @@ import Header from './components/Header.jsx';
 import Hero from './components/Hero.jsx';
 import SearchPanel from './components/SearchPanel.jsx';
 import ExpressionCard from './components/ExpressionCard.jsx';
+import EmotionPage from './components/EmotionPage.jsx';
 import Pagination from './components/Pagination.jsx';
+import WordPage from './components/WordPage.jsx';
 import useTheme from './hooks/useTheme.js';
 import useCardPersistence, { applyEditedFields } from './hooks/useCardPersistence.js';
+import { siteBase, unslugify } from './lib/routes.js';
 
 const pageSize = 24;
 const searchCharacterMap = {
@@ -31,15 +34,26 @@ function matchesQuery(entry, query) {
   return normalizeSearchText(entry.searchableText).includes(needle);
 }
 
+function getRoute(pathname) {
+  const relativePath = pathname.replace(new RegExp(`^${siteBase}/?`), '').replace(/^\/|\/$/g, '');
+  const [section, slug] = relativePath.split('/');
+
+  if (section === 'word' && slug) return { type: 'word', value: unslugify(slug) };
+  if (section === 'emotion' && slug) return { type: 'emotion', value: unslugify(slug) };
+  return { type: 'home' };
+}
+
 export default function App() {
   const [query, setQuery] = useState('');
   const [locale, setLocale] = useState('zh');
   const [currentPage, setCurrentPage] = useState(1);
+  const [pathname, setPathname] = useState(() => window.location.pathname);
   const [database, setDatabase] = useState({ source: 'Chinese-teaching.txt', total: 0, entries: [], loading: true });
   const { theme, toggleTheme } = useTheme();
   const { restoreEdits, saveEdit } = useCardPersistence();
   const reduceMotion = useReducedMotion();
   const messages = copy[locale];
+  const route = useMemo(() => getRoute(pathname), [pathname]);
   const results = useMemo(
     () => database.entries.filter((entry) => matchesQuery(entry, query)),
     [database.entries, query],
@@ -65,10 +79,21 @@ export default function App() {
   const pageResults = results.slice((visiblePage - 1) * pageSize, visiblePage * pageSize);
 
   const transition = reduceMotion ? { duration: 0 } : { duration: 0.42, ease: [0.16, 1, 0.3, 1] };
+  const routedEntry = useMemo(() => (
+    route.type === 'word'
+      ? database.entries.find((entry) => entry.editable.term === route.value || entry.term === route.value)
+      : null
+  ), [database.entries, route]);
 
   useEffect(() => {
     document.documentElement.lang = locale === 'zh' ? 'zh-Hant' : locale;
   }, [locale]);
+
+  useEffect(() => {
+    const handleLocationChange = () => setPathname(window.location.pathname);
+    window.addEventListener('popstate', handleLocationChange);
+    return () => window.removeEventListener('popstate', handleLocationChange);
+  }, []);
 
   useEffect(() => {
     let active = true;
@@ -126,91 +151,99 @@ export default function App() {
         onThemeToggle={toggleTheme}
       />
       <main>
-        <Hero messages={messages} />
+        {route.type === 'word' && routedEntry ? (
+          <WordPage entry={routedEntry} entries={database.entries} locale={locale} messages={messages} />
+        ) : route.type === 'emotion' ? (
+          <EmotionPage category={route.value} entries={database.entries} messages={messages} />
+        ) : (
+          <>
+            <Hero messages={messages} />
 
-        <motion.section
-          id="explore"
-          className="mx-auto max-w-7xl px-5 pb-20 sm:px-8 lg:px-12 lg:pb-28"
-          initial={reduceMotion ? false : { opacity: 0, y: 22 }}
-          whileInView={{ opacity: 1, y: 0 }}
-          viewport={{ once: true, margin: '-80px' }}
-          transition={transition}
-        >
-          <SearchPanel
-            locale={locale}
-            messages={messages}
-            query={query}
-            resultCount={database.loading ? null : results.length}
-            suggestions={searchPrompts}
-            popularWords={popularResultWords}
-            onQueryChange={handleQueryChange}
-          />
-
-          <div id="results-heading" className="scroll-mt-28 mt-12 flex items-end justify-between border-b border-line pb-5 dark:border-line-dark">
-            <div>
-              <p className="label">{messages.entries}</p>
-              <h2 className="mt-3 text-2xl font-medium tracking-tight sm:text-3xl">
-                {messages.results(query)}
-              </h2>
-            </div>
-            <span className="hidden text-sm tracking-[0.16em] text-muted dark:text-muted-dark sm:block">
-              {messages.count(results.length)}
-            </span>
-          </div>
-
-          <motion.div layout className="mt-8 grid gap-5 lg:grid-cols-2">
-            <AnimatePresence mode="popLayout">
-              {pageResults.map((entry, index) => (
-                <ExpressionCard
-                  key={entry.id}
-                  entry={entry}
-                  locale={locale}
-                  messages={messages}
-                  index={index}
-                  reduceMotion={reduceMotion}
-                  onSave={handleSaveEntry}
-                />
-              ))}
-            </AnimatePresence>
-          </motion.div>
-
-          {database.loading && (
-            <p className="mt-12 text-center text-sm tracking-[0.2em] text-muted dark:text-muted-dark">
-              {messages.loading}
-            </p>
-          )}
-
-          {!database.loading && results.length > pageSize && (
-            <>
-              <p className="mt-9 text-center text-sm tracking-[0.12em] text-muted dark:text-muted-dark">
-                {messages.showing((visiblePage - 1) * pageSize + 1, Math.min(visiblePage * pageSize, results.length), results.length)}
-              </p>
-              <Pagination
-                key={`${visiblePage}-${totalPages}`}
-                currentPage={visiblePage}
-                totalPages={totalPages}
+            <motion.section
+              id="explore"
+              className="mx-auto max-w-7xl px-5 pb-20 sm:px-8 lg:px-12 lg:pb-28"
+              initial={reduceMotion ? false : { opacity: 0, y: 22 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true, margin: '-80px' }}
+              transition={transition}
+            >
+              <SearchPanel
+                locale={locale}
                 messages={messages}
-                onPageChange={handlePageChange}
+                query={query}
+                resultCount={database.loading ? null : results.length}
+                suggestions={searchPrompts}
+                popularWords={popularResultWords}
+                onQueryChange={handleQueryChange}
               />
-            </>
-          )}
 
-          <AnimatePresence>
-            {!database.loading && !results.length && (
-              <motion.div
-                className="mt-8 border border-line bg-paper px-7 py-16 text-center dark:border-line-dark dark:bg-panel"
-                initial={{ opacity: 0, y: 8 }}
-                animate={{ opacity: 1, y: 0 }}
-                exit={{ opacity: 0 }}
-              >
-                <p className="text-xl font-medium">{messages.emptyTitle}</p>
-                <p className="mx-auto mt-3 max-w-md text-sm leading-7 text-muted dark:text-muted-dark">
-                  {messages.emptyBody}
-                </p>
+              <div id="results-heading" className="scroll-mt-28 mt-12 flex items-end justify-between border-b border-line pb-5 dark:border-line-dark">
+                <div>
+                  <p className="label">{messages.entries}</p>
+                  <h2 className="mt-3 text-2xl font-medium tracking-tight sm:text-3xl">
+                    {messages.results(query)}
+                  </h2>
+                </div>
+                <span className="hidden text-sm tracking-[0.16em] text-muted dark:text-muted-dark sm:block">
+                  {messages.count(results.length)}
+                </span>
+              </div>
+
+              <motion.div layout className="mt-8 grid gap-5 lg:grid-cols-2">
+                <AnimatePresence mode="popLayout">
+                  {pageResults.map((entry, index) => (
+                    <ExpressionCard
+                      key={entry.id}
+                      entry={entry}
+                      locale={locale}
+                      messages={messages}
+                      index={index}
+                      reduceMotion={reduceMotion}
+                      onSave={handleSaveEntry}
+                    />
+                  ))}
+                </AnimatePresence>
               </motion.div>
-            )}
-          </AnimatePresence>
-        </motion.section>
+
+              {database.loading && (
+                <p className="mt-12 text-center text-sm tracking-[0.2em] text-muted dark:text-muted-dark">
+                  {messages.loading}
+                </p>
+              )}
+
+              {!database.loading && results.length > pageSize && (
+                <>
+                  <p className="mt-9 text-center text-sm tracking-[0.12em] text-muted dark:text-muted-dark">
+                    {messages.showing((visiblePage - 1) * pageSize + 1, Math.min(visiblePage * pageSize, results.length), results.length)}
+                  </p>
+                  <Pagination
+                    key={`${visiblePage}-${totalPages}`}
+                    currentPage={visiblePage}
+                    totalPages={totalPages}
+                    messages={messages}
+                    onPageChange={handlePageChange}
+                  />
+                </>
+              )}
+
+              <AnimatePresence>
+                {!database.loading && !results.length && (
+                  <motion.div
+                    className="mt-8 border border-line bg-paper px-7 py-16 text-center dark:border-line-dark dark:bg-panel"
+                    initial={{ opacity: 0, y: 8 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    exit={{ opacity: 0 }}
+                  >
+                    <p className="text-xl font-medium">{messages.emptyTitle}</p>
+                    <p className="mx-auto mt-3 max-w-md text-sm leading-7 text-muted dark:text-muted-dark">
+                      {messages.emptyBody}
+                    </p>
+                  </motion.div>
+                )}
+              </AnimatePresence>
+            </motion.section>
+          </>
+        )}
       </main>
 
       <footer className="border-t border-line px-5 py-8 text-sm text-muted dark:border-line-dark dark:text-muted-dark sm:px-8 lg:px-12">

@@ -1,4 +1,5 @@
 import { Search, X } from 'lucide-react';
+import { wordPath } from '../lib/routes.js';
 
 export default function SearchPanel({ locale, messages, query, resultCount, suggestions, popularWords, onQueryChange }) {
   return (
@@ -61,15 +62,14 @@ export default function SearchPanel({ locale, messages, query, resultCount, sugg
             <p className="text-xs tracking-[0.18em] text-muted dark:text-muted-dark">{messages.popular}</p>
             <div className="mt-4 grid gap-2 sm:grid-cols-5">
               {popularWords.map((word, index) => (
-                <button
+                <a
                   key={word.query}
-                  type="button"
                   className={`group flex min-h-16 items-center gap-3 border px-3 py-2 text-left transition-all ${
                     query === word.query
                       ? 'border-ink bg-ink text-canvas dark:border-moon dark:bg-moon dark:text-night'
                       : 'border-line bg-paper text-ink hover:border-accent dark:border-line-dark dark:bg-panel dark:text-moon dark:hover:border-accent-soft'
                   }`}
-                  onClick={() => onQueryChange(word.query)}
+                  href={wordPath(word.query)}
                 >
                   <span className={`grid size-7 shrink-0 place-items-center border text-xs ${
                     query === word.query
@@ -81,7 +81,7 @@ export default function SearchPanel({ locale, messages, query, resultCount, sugg
                   <span className="min-w-0">
                     <span className="block truncate text-sm font-medium">{word.zh}</span>
                   </span>
-                </button>
+                </a>
               ))}
             </div>
           </div>

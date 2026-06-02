@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react';
 import { AnimatePresence, motion } from 'framer-motion';
-import { Check, PencilLine, X } from 'lucide-react';
+import { Check, ExternalLink, PencilLine, X } from 'lucide-react';
+import { emotionPath, wordPath } from '../lib/routes.js';
 
 const categoryNames = {
   zh: { 成語: '成語', 典故: '典故', 文化詞彙: '文化詞彙' },
@@ -108,7 +109,15 @@ function ReadCard({ entry, example, locale, messages, reduceMotion, onEdit, show
       <div className="flex justify-between gap-4">
         <div>
           <div className="flex items-baseline gap-3">
-            <h3 className="text-3xl font-medium tracking-tight sm:text-4xl">{entry.editable.term}</h3>
+            <h3 className="text-3xl font-medium tracking-tight sm:text-4xl">
+              <a
+                className="transition-colors hover:text-accent dark:hover:text-accent-soft"
+                href={wordPath(entry.editable.term)}
+                onClick={(event) => event.stopPropagation()}
+              >
+                {entry.editable.term}
+              </a>
+            </h3>
             <span className="text-xs tracking-[0.18em] text-muted dark:text-muted-dark">
               {categoryNames[locale][entry.category]}
             </span>
@@ -149,11 +158,25 @@ function ReadCard({ entry, example, locale, messages, reduceMotion, onEdit, show
 
       <div className="mt-6 flex flex-wrap gap-2">
         {entry.editable.emotions.map((emotion) => (
-          <span key={emotion} className="emotion-tag bg-canvas px-3 py-1.5 text-xs text-muted dark:bg-night dark:text-muted-dark">
+          <a
+            key={emotion}
+            className="emotion-tag bg-canvas px-3 py-1.5 text-xs text-muted transition-colors hover:text-ink dark:bg-night dark:text-muted-dark dark:hover:text-moon"
+            href={emotionPath(emotion)}
+            onClick={(event) => event.stopPropagation()}
+          >
             {emotion}
-          </span>
+          </a>
         ))}
       </div>
+
+      <a
+        className="mt-5 inline-flex items-center gap-2 text-xs tracking-[0.12em] text-accent transition-colors hover:text-ink dark:text-accent-soft dark:hover:text-moon"
+        href={wordPath(entry.editable.term)}
+        onClick={(event) => event.stopPropagation()}
+      >
+        {messages.openWordPage}
+        <ExternalLink size={13} />
+      </a>
 
       <dl className="mt-7 space-y-5 text-sm">
         <Detail label={messages.english} text={entry.editable.english || messages.fallback} />
