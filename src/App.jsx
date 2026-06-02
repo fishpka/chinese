@@ -10,7 +10,6 @@ import EmotionPage from './components/EmotionPage.jsx';
 import Pagination from './components/Pagination.jsx';
 import WordPage from './components/WordPage.jsx';
 import useTheme from './hooks/useTheme.js';
-import useCardPersistence, { applyEditedFields } from './hooks/useCardPersistence.js';
 import { siteBase, unslugify } from './lib/routes.js';
 
 const pageSize = 24;
@@ -50,7 +49,6 @@ export default function App() {
   const [pathname, setPathname] = useState(() => window.location.pathname);
   const [database, setDatabase] = useState({ source: 'Chinese-teaching.txt', total: 0, entries: [], loading: true });
   const { theme, toggleTheme } = useTheme();
-  const { restoreEdits, saveEdit } = useCardPersistence();
   const reduceMotion = useReducedMotion();
   const messages = copy[locale];
   const route = useMemo(() => getRoute(pathname), [pathname]);
@@ -103,7 +101,6 @@ export default function App() {
         if (active) {
           setDatabase({
             ...loadedDatabase,
-            entries: restoreEdits(loadedDatabase.entries),
             loading: false,
           });
         }
@@ -115,19 +112,7 @@ export default function App() {
     return () => {
       active = false;
     };
-  }, [restoreEdits]);
-
-  function handleSaveEntry(entryId, editedFields) {
-    const saved = saveEdit(entryId, editedFields);
-    setDatabase((current) => ({
-      ...current,
-      entries: current.entries.map((entry) => {
-        if (entry.id !== entryId) return entry;
-        return applyEditedFields(entry, editedFields);
-      }),
-    }));
-    return saved;
-  }
+  }, []);
 
   function handlePageChange(page) {
     setCurrentPage(page);
@@ -199,7 +184,6 @@ export default function App() {
                       messages={messages}
                       index={index}
                       reduceMotion={reduceMotion}
-                      onSave={handleSaveEntry}
                     />
                   ))}
                 </AnimatePresence>
