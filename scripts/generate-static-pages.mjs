@@ -25,15 +25,6 @@ function routeSegment(value) {
   return String(value).trim().replaceAll('/', '／');
 }
 
-function escapeXml(value) {
-  return String(value)
-    .replaceAll('&', '&amp;')
-    .replaceAll('<', '&lt;')
-    .replaceAll('>', '&gt;')
-    .replaceAll('"', '&quot;')
-    .replaceAll("'", '&apos;');
-}
-
 function cleanLines(block) {
   return block
     .split(/\r?\n/)
@@ -97,17 +88,6 @@ async function writeRoute(routePath, html) {
   await writeFile(path.join(directory, 'index.html'), html);
 }
 
-function buildSitemap(entries, emotions) {
-  const lastmod = new Date().toISOString().slice(0, 10);
-  const urls = [
-    `${siteUrl}/`,
-    ...entries.map((entry) => `${siteUrl}/word/${slugify(entry.term)}/`),
-    ...emotions.map((emotion) => `${siteUrl}/emotion/${slugify(emotion)}/`),
-  ];
-
-  return `<?xml version="1.0" encoding="UTF-8"?>\n<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">\n${urls.map((url, index) => `  <url>\n    <loc>${escapeXml(url)}</loc>\n    <lastmod>${lastmod}</lastmod>\n    <changefreq>${index === 0 ? 'weekly' : 'monthly'}</changefreq>\n    <priority>${index === 0 ? '1.0' : '0.7'}</priority>\n  </url>`).join('\n')}\n</urlset>\n`;
-}
-
 const [sourceText, indexHtml] = await Promise.all([
   readFile(sourcePath, 'utf8'),
   readFile(path.join(distDir, 'index.html'), 'utf8'),
@@ -120,7 +100,6 @@ await Promise.all([
   ...entries.map((entry) => writeRoute(`word/${routeSegment(entry.term)}`, indexHtml)),
   ...emotions.map((emotion) => writeRoute(`emotion/${routeSegment(emotion)}`, indexHtml)),
   writeFile(path.join(distDir, '404.html'), indexHtml),
-  writeFile(path.join(distDir, 'sitemap.xml'), buildSitemap(entries, emotions)),
 ]);
 
-console.log(`Generated ${entries.length} word pages, ${emotions.length} emotion pages, and sitemap.xml`);
+console.log(`Generated ${entries.length} word pages and ${emotions.length} emotion pages`);
