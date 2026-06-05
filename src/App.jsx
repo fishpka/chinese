@@ -70,7 +70,7 @@ export default function App() {
       });
       return words;
     }, []);
-    return uniqueWords.slice(5, 10);
+    return uniqueWords.slice(10, 15);
   }, [results]);
   const totalPages = Math.max(1, Math.ceil(results.length / pageSize));
   const visiblePage = Math.min(currentPage, totalPages);
