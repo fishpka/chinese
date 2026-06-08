@@ -1,7 +1,26 @@
+import { useState } from 'react';
 import { Search, X } from 'lucide-react';
 import { wordPath } from '../lib/routes.js';
 
-export default function SearchPanel({ locale, messages, query, resultCount, suggestions, popularWords, onQueryChange }) {
+const categoryNames = {
+  zh: { 成語: '成語', 典故: '典故', 文化詞彙: '文化詞彙' },
+  en: { 成語: 'Idiom', 典故: 'Allusion', 文化詞彙: 'Cultural term' },
+  fr: { 成語: 'Expression', 典故: 'Allusion', 文化詞彙: 'Terme culturel' },
+};
+
+export default function SearchPanel({
+  locale,
+  messages,
+  query,
+  resultCount,
+  suggestions,
+  autocompleteSuggestions,
+  popularWords,
+  onQueryChange,
+}) {
+  const [isSearchFocused, setIsSearchFocused] = useState(false);
+  const showAutocomplete = isSearchFocused && autocompleteSuggestions.length > 0;
+
   return (
     <section className="search-panel border-y border-line py-7 dark:border-line-dark sm:py-9" aria-label="語感搜尋">
       <div className="grid items-start gap-7 lg:grid-cols-[15rem_1fr]">
@@ -14,26 +33,72 @@ export default function SearchPanel({ locale, messages, query, resultCount, sugg
 
         <div>
           <label className="sr-only" htmlFor="nuance-search">{messages.searchAria}</label>
-          <div className="search-line group flex items-center gap-4 border-b border-ink pb-4 dark:border-moon">
-            <Search className="shrink-0 text-muted dark:text-muted-dark" size={20} />
-            <input
-              id="nuance-search"
-              className="w-full bg-transparent text-xl font-medium outline-none placeholder:text-faint dark:placeholder:text-faint-dark sm:text-2xl"
-              type="search"
-              value={query}
-              onChange={(event) => onQueryChange(event.target.value)}
-              placeholder={messages.placeholder}
-              autoComplete="off"
-            />
-            {query && (
-              <button
-                type="button"
-                className="shrink-0 text-muted transition-colors hover:text-ink dark:text-muted-dark dark:hover:text-moon"
-                onClick={() => onQueryChange('')}
-                aria-label={messages.clear}
+          <div className="relative">
+            <div className="search-line group flex items-center gap-4 border-b border-ink pb-4 dark:border-moon">
+              <Search className="shrink-0 text-muted dark:text-muted-dark" size={20} />
+              <input
+                id="nuance-search"
+                className="w-full bg-transparent text-xl font-medium outline-none placeholder:text-faint dark:placeholder:text-faint-dark sm:text-2xl"
+                type="search"
+                value={query}
+                onBlur={() => setIsSearchFocused(false)}
+                onChange={(event) => onQueryChange(event.target.value)}
+                onFocus={() => setIsSearchFocused(true)}
+                placeholder={messages.placeholder}
+                autoComplete="off"
+                aria-autocomplete="list"
+                aria-expanded={showAutocomplete}
+                aria-controls="nuance-search-suggestions"
+              />
+              {query && (
+                <button
+                  type="button"
+                  className="shrink-0 text-muted transition-colors hover:text-ink dark:text-muted-dark dark:hover:text-moon"
+                  onClick={() => onQueryChange('')}
+                  aria-label={messages.clear}
+                >
+                  <X size={18} />
+                </button>
+              )}
+            </div>
+
+            {showAutocomplete && (
+              <div
+                id="nuance-search-suggestions"
+                className="absolute left-0 right-0 top-full z-20 mt-3 border border-line bg-paper shadow-lg shadow-ink/5 dark:border-line-dark dark:bg-panel dark:shadow-black/20"
+                role="listbox"
               >
-                <X size={18} />
-              </button>
+                {autocompleteSuggestions.map((suggestion) => (
+                  <button
+                    key={suggestion.id}
+                    type="button"
+                    className="grid w-full gap-2 border-b border-line px-4 py-3 text-left transition-colors last:border-b-0 hover:bg-canvas focus:bg-canvas focus:outline-none dark:border-line-dark dark:hover:bg-night dark:focus:bg-night sm:grid-cols-[minmax(8rem,1fr)_minmax(10rem,1.45fr)] sm:items-center"
+                    onMouseDown={(event) => event.preventDefault()}
+                    onClick={() => {
+                      onQueryChange(suggestion.term);
+                      setIsSearchFocused(false);
+                    }}
+                    role="option"
+                  >
+                    <span className="min-w-0">
+                      <span className="block truncate text-base font-medium text-ink dark:text-moon">{suggestion.term}</span>
+                      <span className="mt-1 block text-xs tracking-[0.16em] text-muted dark:text-muted-dark">
+                        {categoryNames[locale][suggestion.category]}
+                      </span>
+                    </span>
+                    <span className="flex min-w-0 flex-wrap gap-1.5">
+                      {suggestion.emotions.map((emotion) => (
+                        <span
+                          key={emotion}
+                          className="emotion-tag bg-canvas px-2.5 py-1 text-xs text-muted dark:bg-night dark:text-muted-dark"
+                        >
+                          {emotion}
+                        </span>
+                      ))}
+                    </span>
+                  </button>
+                ))}
+              </div>
             )}
           </div>
 
