@@ -127,7 +127,7 @@ export default function App() {
       });
       return words;
     }, []);
-    return uniqueWords.slice(10, 15);
+    return uniqueWords.slice(0, 5);
   }, [results]);
   const autocompleteSuggestions = useMemo(
     () => getAutocompleteSuggestions(database.entries, query),
