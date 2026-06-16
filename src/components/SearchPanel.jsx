@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { Search, X } from 'lucide-react';
+import { RefreshCw, Search, X } from 'lucide-react';
 import { wordPath } from '../lib/routes.js';
 
 const categoryNames = {
@@ -16,6 +16,7 @@ export default function SearchPanel({
   suggestions,
   autocompleteSuggestions,
   popularWords,
+  onRefreshPopularWords,
   onQueryChange,
 }) {
   const [isSearchFocused, setIsSearchFocused] = useState(false);
@@ -124,7 +125,18 @@ export default function SearchPanel({
           </div>
 
           <div className="mt-7 border-t border-line pt-5 dark:border-line-dark">
-            <p className="text-xs tracking-[0.18em] text-muted dark:text-muted-dark">{messages.popular}</p>
+            <div className="flex items-center gap-2">
+              <p className="text-xs tracking-[0.18em] text-muted dark:text-muted-dark">{messages.popular}</p>
+              <button
+                type="button"
+                className="grid size-8 place-items-center border border-line text-muted transition-colors hover:border-ink hover:text-ink dark:border-line-dark dark:text-muted-dark dark:hover:border-moon dark:hover:text-moon"
+                onClick={onRefreshPopularWords}
+                aria-label={messages.refreshRandomWords}
+                title={messages.refreshRandomWords}
+              >
+                <RefreshCw size={14} />
+              </button>
+            </div>
             <div className="mt-4 grid gap-2 sm:grid-cols-5">
               {popularWords.map((word, index) => (
                 <a

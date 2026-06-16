@@ -10,6 +10,7 @@ import EmotionPage from './components/EmotionPage.jsx';
 import Pagination from './components/Pagination.jsx';
 import WordPage from './components/WordPage.jsx';
 import useTheme from './hooks/useTheme.js';
+import { getMillisecondsUntilNextTaipeiMidnight, getTaipeiDateKey, selectDailyEntries } from './lib/dailyWord.js';
 import { siteBase, unslugify } from './lib/routes.js';
 
 const pageSize = 24;
@@ -104,6 +105,8 @@ export default function App() {
   const [locale, setLocale] = useState('zh');
   const [currentPage, setCurrentPage] = useState(1);
   const [pathname, setPathname] = useState(() => window.location.pathname);
+  const [dailyWordKey, setDailyWordKey] = useState(() => getTaipeiDateKey());
+  const [randomWordsRefreshIndex, setRandomWordsRefreshIndex] = useState(0);
   const [database, setDatabase] = useState({ source: 'Chinese-teaching.txt', total: 0, entries: [], loading: true });
   const { theme, toggleTheme } = useTheme();
   const reduceMotion = useReducedMotion();
@@ -113,9 +116,14 @@ export default function App() {
     () => database.entries.filter((entry) => matchesQuery(entry, query)),
     [database.entries, query],
   );
-  const popularResultWords = useMemo(() => {
+  const dailyRandomWords = useMemo(() => {
     const seen = new Set();
-    const uniqueWords = results.reduce((words, entry) => {
+    const uniqueWords = selectDailyEntries(
+      database.entries,
+      20,
+      new Date(`${dailyWordKey}T00:00:00+08:00`),
+      randomWordsRefreshIndex,
+    ).reduce((words, entry) => {
       const term = entry.editable.term.trim();
       if (!term || seen.has(term)) return words;
       seen.add(term);
@@ -128,7 +136,7 @@ export default function App() {
       return words;
     }, []);
     return uniqueWords.slice(0, 5);
-  }, [results]);
+  }, [database.entries, dailyWordKey, randomWordsRefreshIndex]);
   const autocompleteSuggestions = useMemo(
     () => getAutocompleteSuggestions(database.entries, query),
     [database.entries, query],
@@ -147,6 +155,14 @@ export default function App() {
   useEffect(() => {
     document.documentElement.lang = locale === 'zh' ? 'zh-Hant' : locale;
   }, [locale]);
+
+  useEffect(() => {
+    const timer = window.setTimeout(() => {
+      setDailyWordKey(getTaipeiDateKey());
+    }, getMillisecondsUntilNextTaipeiMidnight());
+
+    return () => window.clearTimeout(timer);
+  }, [dailyWordKey]);
 
   useEffect(() => {
     const handleLocationChange = () => setPathname(window.location.pathname);
@@ -220,7 +236,8 @@ export default function App() {
                 resultCount={database.loading ? null : results.length}
                 suggestions={searchPrompts}
                 autocompleteSuggestions={autocompleteSuggestions}
-                popularWords={popularResultWords}
+                popularWords={dailyRandomWords}
+                onRefreshPopularWords={() => setRandomWordsRefreshIndex((index) => index + 1)}
                 onQueryChange={handleQueryChange}
               />
 
