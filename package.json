@@ -6,7 +6,7 @@
   "scripts": {
     "dev": "vite",
     "prebuild": "node scripts/generate-sitemap.mjs",
-    "build": "vite build && node scripts/generate-static-pages.mjs",
+    "build": "vite build && node scripts/generate-static-pages.mjs && node scripts/sync-dist-to-root.mjs",
     "predeploy": "npm run build",
     "deploy": "gh-pages -d dist",
     "lint": "eslint .",
