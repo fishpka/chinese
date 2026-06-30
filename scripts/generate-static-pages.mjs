@@ -21,8 +21,45 @@ function slugify(value) {
   return encodeURIComponent(String(value).trim());
 }
 
+function routeUrl(routePath) {
+  return `${siteUrl}/${routePath.split('/').map(slugify).join('/')}/`;
+}
+
 function routeSegment(value) {
   return String(value).trim().replaceAll('/', '／');
+}
+
+function escapeHtml(value) {
+  return String(value)
+    .replaceAll('&', '&amp;')
+    .replaceAll('<', '&lt;')
+    .replaceAll('>', '&gt;')
+    .replaceAll('"', '&quot;');
+}
+
+function injectMeta(html, { title, description, url }) {
+  const safeTitle = escapeHtml(title);
+  const safeDescription = escapeHtml(description);
+  const safeUrl = url ? escapeHtml(url) : '';
+
+  let nextHtml = html
+    .replace(/<title>.*?<\/title>/, `<title>${safeTitle}</title>`)
+    .replace(/(<meta name="description" content=")[^"]*(")/, `$1${safeDescription}$2`)
+    .replace(/(<meta property="og:title" content=")[^"]*(")/, `$1${safeTitle}$2`)
+    .replace(/(<meta property="og:description" content=")[^"]*(")/, `$1${safeDescription}$2`)
+    .replace(/(<meta name="twitter:title" content=")[^"]*(")/, `$1${safeTitle}$2`)
+    .replace(/(<meta name="twitter:description" content=")[^"]*(")/, `$1${safeDescription}$2`)
+    .replace(/("name": ")[^"]*(")/, `$1${safeTitle}$2`)
+    .replace(/("description": ")[^"]*(")/, `$1${safeDescription}$2`);
+
+  if (safeUrl) {
+    nextHtml = nextHtml
+      .replace(/(<link rel="canonical" href=")[^"]*(")/, `$1${safeUrl}$2`)
+      .replace(/(<meta property="og:url" content=")[^"]*(")/, `$1${safeUrl}$2`)
+      .replace(/("url": ")[^"]*(")/, `$1${safeUrl}$2`);
+  }
+
+  return nextHtml;
 }
 
 function cleanLines(block) {
@@ -97,7 +134,16 @@ const entries = parseEntries(sourceText);
 const emotions = [...new Set(entries.flatMap((entry) => [entry.category, ...entry.emotions]))];
 
 await Promise.all([
-  ...entries.map((entry) => writeRoute(`word/${routeSegment(entry.term)}`, indexHtml)),
+  ...entries.map((entry) => {
+    const routePath = `word/${routeSegment(entry.term)}`;
+    const html = injectMeta(indexHtml, {
+      title: `${entry.term}｜${entry.category} - 中文語境`,
+      description: `「${entry.term}」是什麼意思？了解這個${entry.category}的文化脈絡與情感意涵。`,
+      url: routeUrl(routePath),
+    });
+
+    return writeRoute(routePath, html);
+  }),
   ...emotions.map((emotion) => writeRoute(`emotion/${routeSegment(emotion)}`, indexHtml)),
   writeFile(path.join(distDir, '404.html'), indexHtml),
 ]);

@@ -1,4 +1,5 @@
 import { ArrowLeft, BookOpen, Network, Tags } from 'lucide-react';
+import { trackEvent } from '../lib/analytics/umami.js';
 import { emotionPath, homePath, wordPath } from '../lib/routes.js';
 
 function uniqueByTerm(entries) {
@@ -50,7 +51,13 @@ export default function WordPage({ entry, entries, locale, messages }) {
 
   return (
     <main className="mx-auto max-w-7xl px-5 py-10 sm:px-8 lg:px-12 lg:py-14">
-      <a className="inline-flex items-center gap-2 text-sm text-muted hover:text-ink dark:text-muted-dark dark:hover:text-moon" href={homePath()}>
+      <a
+        className="inline-flex items-center gap-2 text-sm text-muted hover:text-ink dark:text-muted-dark dark:hover:text-moon"
+        href={homePath()}
+        onClick={() => trackEvent('word_page_back_click', {
+          term: entry.editable.term,
+        })}
+      >
         <ArrowLeft size={16} />
         {messages.backToArchive}
       </a>
@@ -65,6 +72,11 @@ export default function WordPage({ entry, entries, locale, messages }) {
                 key={emotion}
                 className="emotion-tag bg-paper px-3 py-1.5 text-xs text-muted transition-colors hover:text-ink dark:bg-panel dark:text-muted-dark dark:hover:text-moon"
                 href={emotionPath(emotion)}
+                onClick={() => trackEvent('emotion_tag_click', {
+                  emotion,
+                  source: 'word_page',
+                  term: entry.editable.term,
+                })}
               >
                 {emotion}
               </a>
@@ -81,9 +93,9 @@ export default function WordPage({ entry, entries, locale, messages }) {
       </section>
 
       <div className="mt-10 grid gap-8 lg:grid-cols-3">
-        <LinkSection icon={<Network size={17} />} title={messages.relatedWords} entries={relatedEntries} messages={messages} />
-        <LinkSection icon={<Tags size={17} />} title={messages.sameEmotionWords} entries={sameEmotionEntries} messages={messages} />
-        <LinkSection icon={<BookOpen size={17} />} title={messages.recommendedReading} entries={recommendedEntries} messages={messages} />
+        <LinkSection icon={<Network size={17} />} title={messages.relatedWords} entries={relatedEntries} source="related_words" messages={messages} />
+        <LinkSection icon={<Tags size={17} />} title={messages.sameEmotionWords} entries={sameEmotionEntries} source="same_emotion_words" messages={messages} />
+        <LinkSection icon={<BookOpen size={17} />} title={messages.recommendedReading} entries={recommendedEntries} source="recommended_reading" messages={messages} />
       </div>
     </main>
   );
@@ -98,7 +110,7 @@ function Detail({ label, text, emphasized = false }) {
   );
 }
 
-function LinkSection({ icon, title, entries, messages }) {
+function LinkSection({ icon, title, entries, source, messages }) {
   return (
     <section className="border border-line bg-paper p-5 dark:border-line-dark dark:bg-panel">
       <h2 className="flex items-center gap-2 text-base font-medium">
@@ -111,6 +123,10 @@ function LinkSection({ icon, title, entries, messages }) {
             key={entry.id}
             className="group border border-line bg-canvas px-4 py-3 transition-colors hover:border-accent dark:border-line-dark dark:bg-night dark:hover:border-accent-soft"
             href={wordPath(entry.editable.term)}
+            onClick={() => trackEvent('word_recommendation_click', {
+              term: entry.editable.term,
+              source,
+            })}
           >
             <span className="block text-sm font-medium text-ink dark:text-moon">{entry.editable.term}</span>
             <span className="mt-1 block text-xs text-muted dark:text-muted-dark">{entry.editable.emotions.join('、')}</span>
@@ -122,4 +138,3 @@ function LinkSection({ icon, title, entries, messages }) {
     </section>
   );
 }
-

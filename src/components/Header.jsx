@@ -1,5 +1,6 @@
 import { motion } from 'framer-motion';
 import { locales } from '../i18n.js';
+import { trackEvent } from '../lib/analytics/umami.js';
 import { homePath } from '../lib/routes.js';
 import ThemeToggle from './ThemeToggle.jsx';
 
@@ -12,7 +13,12 @@ export default function Header({ locale, messages, theme, onLocaleChange, onThem
       transition={{ duration: 0.5, ease: [0.16, 1, 0.3, 1] }}
     >
       <div className="mx-auto flex h-17 max-w-7xl items-center justify-between px-5 sm:px-8 lg:px-12">
-        <a className="flex items-center gap-3" href={homePath()} aria-label={messages.brandSubtitle}>
+        <a
+          className="flex items-center gap-3"
+          href={homePath()}
+          aria-label={messages.brandSubtitle}
+          onClick={() => trackEvent('nav_home_click', { location: 'header_brand' })}
+        >
           <span className="seal-mark grid size-9 place-items-center text-base font-medium">
             境
           </span>
@@ -26,8 +32,20 @@ export default function Header({ locale, messages, theme, onLocaleChange, onThem
 
         <div className="flex items-center gap-6">
           <nav className="hidden items-center gap-7 text-sm text-muted dark:text-muted-dark md:flex" aria-label="主要導覽">
-            <a className="ink-link transition-colors hover:text-ink dark:hover:text-moon" href={`${homePath()}#explore`}>{messages.navExplore}</a>
-            <a className="ink-link transition-colors hover:text-ink dark:hover:text-moon" href={`${homePath()}#method`}>{messages.navAbout}</a>
+            <a
+              className="ink-link transition-colors hover:text-ink dark:hover:text-moon"
+              href={`${homePath()}#explore`}
+              onClick={() => trackEvent('nav_anchor_click', { target: 'explore' })}
+            >
+              {messages.navExplore}
+            </a>
+            <a
+              className="ink-link transition-colors hover:text-ink dark:hover:text-moon"
+              href={`${homePath()}#method`}
+              onClick={() => trackEvent('nav_anchor_click', { target: 'method' })}
+            >
+              {messages.navAbout}
+            </a>
           </nav>
           <div className="locale-switcher hidden items-center border border-line dark:border-line-dark sm:flex" aria-label="Language">
             {locales.map((option) => (

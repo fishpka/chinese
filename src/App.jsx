@@ -10,6 +10,7 @@ import EmotionPage from './components/EmotionPage.jsx';
 import Pagination from './components/Pagination.jsx';
 import WordPage from './components/WordPage.jsx';
 import useTheme from './hooks/useTheme.js';
+import { trackEvent, trackPageView } from './lib/analytics/umami.js';
 import { getMillisecondsUntilNextTaipeiMidnight, getTaipeiDateKey, selectDailyEntries } from './lib/dailyWord.js';
 import { siteBase, unslugify } from './lib/routes.js';
 
@@ -171,6 +172,20 @@ export default function App() {
   }, []);
 
   useEffect(() => {
+    const pageView = {
+      url: `${window.location.pathname}${window.location.search}${window.location.hash}`,
+      title: document.title,
+    };
+    if (trackPageView(pageView)) return undefined;
+
+    const timeoutId = window.setTimeout(() => {
+      trackPageView(pageView);
+    }, 1000);
+
+    return () => window.clearTimeout(timeoutId);
+  }, [pathname]);
+
+  useEffect(() => {
     let active = true;
 
     loadTeachingDatabase()
@@ -191,7 +206,28 @@ export default function App() {
     };
   }, []);
 
+  useEffect(() => {
+    const normalizedQuery = query.trim();
+    if (!normalizedQuery || database.loading) return undefined;
+
+    const timeoutId = window.setTimeout(() => {
+      trackEvent('search_performed', {
+        query: normalizedQuery,
+        length: normalizedQuery.length,
+        resultCount: results.length,
+      });
+    }, 900);
+
+    return () => window.clearTimeout(timeoutId);
+  }, [database.loading, query, results.length]);
+
   function handlePageChange(page) {
+    trackEvent('pagination_change', {
+      from: visiblePage,
+      to: page,
+      totalPages,
+      query: query.trim() || '(empty)',
+    });
     setCurrentPage(page);
     window.requestAnimationFrame(() => {
       document.getElementById('results-heading')?.scrollIntoView({ behavior: reduceMotion ? 'auto' : 'smooth', block: 'start' });
@@ -203,14 +239,38 @@ export default function App() {
     setCurrentPage(1);
   }
 
+  function handleLocaleChange(nextLocale) {
+    trackEvent('locale_change', {
+      from: locale,
+      to: nextLocale,
+    });
+    setLocale(nextLocale);
+  }
+
+  function handleThemeToggle() {
+    trackEvent('theme_toggle', {
+      from: theme,
+      to: theme === 'dark' ? 'light' : 'dark',
+    });
+    toggleTheme();
+  }
+
+  function handleRefreshPopularWords() {
+    trackEvent('popular_words_refresh', {
+      dateKey: dailyWordKey,
+      refreshIndex: randomWordsRefreshIndex + 1,
+    });
+    setRandomWordsRefreshIndex((index) => index + 1);
+  }
+
   return (
     <div className="min-h-screen bg-canvas text-ink transition-colors duration-500 dark:bg-night dark:text-moon">
       <Header
         locale={locale}
         messages={messages}
         theme={theme}
-        onLocaleChange={setLocale}
-        onThemeToggle={toggleTheme}
+        onLocaleChange={handleLocaleChange}
+        onThemeToggle={handleThemeToggle}
       />
       <main>
         {route.type === 'word' && routedEntry ? (
@@ -237,7 +297,7 @@ export default function App() {
                 suggestions={searchPrompts}
                 autocompleteSuggestions={autocompleteSuggestions}
                 popularWords={dailyRandomWords}
-                onRefreshPopularWords={() => setRandomWordsRefreshIndex((index) => index + 1)}
+                onRefreshPopularWords={handleRefreshPopularWords}
                 onQueryChange={handleQueryChange}
               />
 

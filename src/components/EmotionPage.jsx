@@ -1,4 +1,5 @@
 import { ArrowLeft } from 'lucide-react';
+import { trackEvent } from '../lib/analytics/umami.js';
 import { emotionPath, homePath, wordPath } from '../lib/routes.js';
 
 function uniqueByTerm(entries) {
@@ -21,7 +22,13 @@ export default function EmotionPage({ category, entries, messages }) {
 
   return (
     <main className="mx-auto max-w-7xl px-5 py-10 sm:px-8 lg:px-12 lg:py-14">
-      <a className="inline-flex items-center gap-2 text-sm text-muted hover:text-ink dark:text-muted-dark dark:hover:text-moon" href={homePath()}>
+      <a
+        className="inline-flex items-center gap-2 text-sm text-muted hover:text-ink dark:text-muted-dark dark:hover:text-moon"
+        href={homePath()}
+        onClick={() => trackEvent('emotion_page_back_click', {
+          category,
+        })}
+      >
         <ArrowLeft size={16} />
         {messages.backToArchive}
       </a>
@@ -38,6 +45,11 @@ export default function EmotionPage({ category, entries, messages }) {
               key={emotion}
               className="emotion-tag bg-paper px-3 py-1.5 text-xs text-muted transition-colors hover:text-ink dark:bg-panel dark:text-muted-dark dark:hover:text-moon"
               href={emotionPath(emotion)}
+              onClick={() => trackEvent('emotion_tag_click', {
+                emotion,
+                source: 'emotion_page',
+                category,
+              })}
             >
               {emotion}
             </a>
@@ -51,6 +63,10 @@ export default function EmotionPage({ category, entries, messages }) {
             key={entry.id}
             className="border border-line bg-paper p-5 transition-colors hover:border-accent dark:border-line-dark dark:bg-panel dark:hover:border-accent-soft"
             href={wordPath(entry.editable.term)}
+            onClick={() => trackEvent('emotion_word_click', {
+              term: entry.editable.term,
+              category,
+            })}
           >
             <span className="block text-xl font-medium text-ink dark:text-moon">{entry.editable.term}</span>
             <span className="mt-3 block text-sm leading-7 text-muted dark:text-muted-dark">
@@ -69,4 +85,3 @@ export default function EmotionPage({ category, entries, messages }) {
     </main>
   );
 }
-

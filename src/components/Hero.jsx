@@ -1,5 +1,6 @@
 import { ArrowDown } from 'lucide-react';
 import { motion, useReducedMotion } from 'framer-motion';
+import { trackEvent } from '../lib/analytics/umami.js';
 
 export default function Hero({ messages }) {
   const reduceMotion = useReducedMotion();
@@ -41,7 +42,11 @@ export default function Hero({ messages }) {
         </div>
         <p className="label mb-4">{messages.methodLabel}</p>
         <p>{messages.method}</p>
-        <a className="mt-7 inline-flex items-center gap-2 text-ink dark:text-moon" href="#explore">
+        <a
+          className="mt-7 inline-flex items-center gap-2 text-ink dark:text-moon"
+          href="#explore"
+          onClick={() => trackEvent('hero_begin_click')}
+        >
           {messages.begin} <ArrowDown size={15} />
         </a>
       </motion.aside>

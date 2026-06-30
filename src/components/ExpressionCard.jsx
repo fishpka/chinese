@@ -1,5 +1,6 @@
 import { motion } from 'framer-motion';
 import { ExternalLink } from 'lucide-react';
+import { trackEvent } from '../lib/analytics/umami.js';
 import { emotionPath, wordPath } from '../lib/routes.js';
 
 const categoryNames = {
@@ -46,6 +47,10 @@ function ReadCard({ entry, example, locale, messages, reduceMotion }) {
             <a
               className="transition-colors hover:text-accent dark:hover:text-accent-soft"
               href={wordPath(entry.editable.term)}
+              onClick={() => trackEvent('word_card_title_click', {
+                term: entry.editable.term,
+                category: entry.category,
+              })}
             >
               {entry.editable.term}
             </a>
@@ -62,6 +67,11 @@ function ReadCard({ entry, example, locale, messages, reduceMotion }) {
             key={emotion}
             className="emotion-tag bg-canvas px-3 py-1.5 text-xs text-muted transition-colors hover:text-ink dark:bg-night dark:text-muted-dark dark:hover:text-moon"
             href={emotionPath(emotion)}
+            onClick={() => trackEvent('emotion_tag_click', {
+              emotion,
+              source: 'word_card',
+              term: entry.editable.term,
+            })}
           >
             {emotion}
           </a>
@@ -71,6 +81,10 @@ function ReadCard({ entry, example, locale, messages, reduceMotion }) {
       <a
         className="mt-5 inline-flex items-center gap-2 text-xs tracking-[0.12em] text-accent transition-colors hover:text-ink dark:text-accent-soft dark:hover:text-moon"
         href={wordPath(entry.editable.term)}
+        onClick={() => trackEvent('word_card_open_click', {
+          term: entry.editable.term,
+          category: entry.category,
+        })}
       >
         {messages.openWordPage}
         <ExternalLink size={13} />

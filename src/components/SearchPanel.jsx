@@ -1,5 +1,6 @@
 import { useState } from 'react';
 import { RefreshCw, Search, X } from 'lucide-react';
+import { trackEvent } from '../lib/analytics/umami.js';
 import { wordPath } from '../lib/routes.js';
 
 const categoryNames = {
@@ -55,7 +56,12 @@ export default function SearchPanel({
                 <button
                   type="button"
                   className="shrink-0 text-muted transition-colors hover:text-ink dark:text-muted-dark dark:hover:text-moon"
-                  onClick={() => onQueryChange('')}
+                  onClick={() => {
+                    trackEvent('search_clear', {
+                      query,
+                    });
+                    onQueryChange('');
+                  }}
                   aria-label={messages.clear}
                 >
                   <X size={18} />
@@ -76,6 +82,11 @@ export default function SearchPanel({
                     className="grid w-full gap-2 border-b border-line px-4 py-3 text-left transition-colors last:border-b-0 hover:bg-canvas focus:bg-canvas focus:outline-none dark:border-line-dark dark:hover:bg-night dark:focus:bg-night sm:grid-cols-[minmax(8rem,1fr)_minmax(10rem,1.45fr)] sm:items-center"
                     onMouseDown={(event) => event.preventDefault()}
                     onClick={() => {
+                      trackEvent('autocomplete_select', {
+                        term: suggestion.term,
+                        category: suggestion.category,
+                        query,
+                      });
                       onQueryChange(suggestion.term);
                       setIsSearchFocused(false);
                     }}
@@ -114,7 +125,13 @@ export default function SearchPanel({
                     ? 'border-ink bg-ink text-canvas dark:border-moon dark:bg-moon dark:text-night'
                     : 'border-line bg-paper text-muted hover:border-ink hover:text-ink dark:border-line-dark dark:bg-panel dark:text-muted-dark dark:hover:border-moon dark:hover:text-moon'
                 }`}
-                onClick={() => onQueryChange(emotion.query)}
+                onClick={() => {
+                  trackEvent('search_prompt_click', {
+                    query: emotion.query,
+                    locale,
+                  });
+                  onQueryChange(emotion.query);
+                }}
               >
                 {emotion[locale]}
               </button>
@@ -146,8 +163,12 @@ export default function SearchPanel({
                       ? 'border-ink bg-ink text-canvas dark:border-moon dark:bg-moon dark:text-night'
                       : 'border-line bg-paper text-ink hover:border-accent dark:border-line-dark dark:bg-panel dark:text-moon dark:hover:border-accent-soft'
                   }`}
-                  href={wordPath(word.query)}
-                >
+                href={wordPath(word.query)}
+                onClick={() => trackEvent('popular_word_click', {
+                  term: word.query,
+                  rank: index + 1,
+                })}
+              >
                   <span className={`grid size-7 shrink-0 place-items-center border text-xs ${
                     query === word.query
                       ? 'border-canvas/50 text-canvas dark:border-night/50 dark:text-night'
