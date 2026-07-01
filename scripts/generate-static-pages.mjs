@@ -1,21 +1,14 @@
 import { mkdir, readFile, writeFile } from 'node:fs/promises';
 import path from 'node:path';
+import { cleanLines, containsHan, findTerm, getCategory, inferEmotions } from '../src/data/termExtraction.js';
 
 const siteBase = '/chinese';
 const siteOrigin = 'https://fishpka.github.io';
 const siteUrl = `${siteOrigin}${siteBase}`;
+const siteImageUrl = `${siteUrl}/ogimage.jpg`;
 const rootDir = process.cwd();
 const sourcePath = path.join(rootDir, 'src/data/Chinese-teaching.txt');
 const distDir = path.join(rootDir, 'dist');
-
-const containsHan = (value) => /\p{Script=Han}/u.test(value);
-const emotionSignals = {
-  焦慮: /焦[虑慮]|anxious|anxiety|inqui[eé]t|angoiss/iu,
-  孤獨: /孤独|孤獨|寂寞|alone|solitude|seul/iu,
-  懷念: /思念|怀念|懷念|nostalgi|longing|yearning|souvenir/iu,
-  無奈: /无奈|無奈|helpless|impuissance|rien y faire/iu,
-  喜悅: /开心|開心|喜悦|喜悅|joy|joyeux|joie/iu,
-};
 
 function slugify(value) {
   return encodeURIComponent(String(value).trim());
@@ -37,10 +30,20 @@ function escapeHtml(value) {
     .replaceAll('"', '&quot;');
 }
 
+function withLocale(url, locale) {
+  const localizedUrl = new URL(url);
+  localizedUrl.searchParams.set('lang', locale);
+  return localizedUrl.toString();
+}
+
 function injectMeta(html, { title, description, url }) {
   const safeTitle = escapeHtml(title);
   const safeDescription = escapeHtml(description);
   const safeUrl = url ? escapeHtml(url) : '';
+  const safeZhUrl = url ? escapeHtml(withLocale(url, 'zh-Hant')) : '';
+  const safeEnUrl = url ? escapeHtml(withLocale(url, 'en')) : '';
+  const safeFrUrl = url ? escapeHtml(withLocale(url, 'fr')) : '';
+  const safeImageUrl = escapeHtml(siteImageUrl);
 
   let nextHtml = html
     .replace(/<title>.*?<\/title>/, `<title>${safeTitle}</title>`)
@@ -49,53 +52,24 @@ function injectMeta(html, { title, description, url }) {
     .replace(/(<meta property="og:description" content=")[^"]*(")/, `$1${safeDescription}$2`)
     .replace(/(<meta name="twitter:title" content=")[^"]*(")/, `$1${safeTitle}$2`)
     .replace(/(<meta name="twitter:description" content=")[^"]*(")/, `$1${safeDescription}$2`)
+    .replace(/(<meta property="og:image" content=")[^"]*(")/, `$1${safeImageUrl}$2`)
+    .replace(/(<meta name="twitter:image" content=")[^"]*(")/, `$1${safeImageUrl}$2`)
     .replace(/("name": ")[^"]*(")/, `$1${safeTitle}$2`)
-    .replace(/("description": ")[^"]*(")/, `$1${safeDescription}$2`);
+    .replace(/("description": ")[^"]*(")/, `$1${safeDescription}$2`)
+    .replace(/("image": ")[^"]*(")/, `$1${safeImageUrl}$2`);
 
   if (safeUrl) {
     nextHtml = nextHtml
       .replace(/(<link rel="canonical" href=")[^"]*(")/, `$1${safeUrl}$2`)
+      .replace(/(<link rel="alternate" href=")[^"]*(" hreflang="zh-Hant" \/>)/, `$1${safeZhUrl}$2`)
+      .replace(/(<link rel="alternate" href=")[^"]*(" hreflang="en" \/>)/, `$1${safeEnUrl}$2`)
+      .replace(/(<link rel="alternate" href=")[^"]*(" hreflang="fr" \/>)/, `$1${safeFrUrl}$2`)
+      .replace(/(<link rel="alternate" href=")[^"]*(" hreflang="x-default" \/>)/, `$1${safeZhUrl}$2`)
       .replace(/(<meta property="og:url" content=")[^"]*(")/, `$1${safeUrl}$2`)
       .replace(/("url": ")[^"]*(")/, `$1${safeUrl}$2`);
   }
 
   return nextHtml;
-}
-
-function cleanLines(block) {
-  return block
-    .split(/\r?\n/)
-    .map((line) => line.trim())
-    .filter((line) => line && !line.startsWith('#') && !/^https?:\/\//i.test(line));
-}
-
-function findTerm(lines) {
-  for (const line of lines) {
-    const heading = line.match(/^[《「]?([\p{Script=Han}]{1,12})[》」]?(?=\s|[A-Za-z（(“"])/u);
-    if (heading) return heading[1];
-  }
-
-  for (const line of lines.filter(containsHan)) {
-    const definition = line.match(/^[《「]?([\p{Script=Han}]{1,10})[》」]?(?=形容|指|是|原|意指|（|\(|「|，|为)/u);
-    if (definition) return definition[1];
-  }
-
-  const fallback = lines.find(containsHan)?.match(/[\p{Script=Han}]{1,12}/u);
-  return fallback?.[0] || '';
-}
-
-function getCategory(term, searchableText) {
-  if (/[诗詞歌赋]|诗|poem|poète|唐朝|朝代|典故|myth|histoire/iu.test(searchableText)) return '典故';
-  if (term.length === 4) return '成語';
-  return '文化詞彙';
-}
-
-function inferEmotions(searchableText, category) {
-  const detected = Object.entries(emotionSignals)
-    .filter(([, pattern]) => pattern.test(searchableText))
-    .map(([emotion]) => emotion);
-
-  return detected.length ? detected : [category];
 }
 
 function parseEntries(sourceText) {
@@ -144,7 +118,16 @@ await Promise.all([
 
     return writeRoute(routePath, html);
   }),
-  ...emotions.map((emotion) => writeRoute(`emotion/${routeSegment(emotion)}`, indexHtml)),
+  ...emotions.map((emotion) => {
+    const routePath = `emotion/${routeSegment(emotion)}`;
+    const html = injectMeta(indexHtml, {
+      title: `${emotion}｜中文語境`,
+      description: `探索「${emotion}」相關的中文詞語、成語與文化語境。`,
+      url: routeUrl(routePath),
+    });
+
+    return writeRoute(routePath, html);
+  }),
   writeFile(path.join(distDir, '404.html'), indexHtml),
 ]);
 

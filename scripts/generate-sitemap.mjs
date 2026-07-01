@@ -1,6 +1,7 @@
 import { mkdir, readFile, writeFile } from 'node:fs/promises';
 import { existsSync } from 'node:fs';
 import path from 'node:path';
+import { cleanLines, findTerm } from '../src/data/termExtraction.js';
 
 const siteBase = '/chinese';
 const siteOrigin = 'https://fishpka.github.io';
@@ -14,8 +15,6 @@ const wordsJsonCandidates = [
   path.join(rootDir, 'words.json'),
 ];
 const fallbackSourcePath = path.join(rootDir, 'src/data/Chinese-teaching.txt');
-
-const containsHan = (value) => /\p{Script=Han}/u.test(value);
 
 function escapeXml(value) {
   return String(value)
@@ -61,28 +60,6 @@ function collectWords(value, words = []) {
   }
 
   return words;
-}
-
-function cleanLines(block) {
-  return block
-    .split(/\r?\n/)
-    .map((line) => line.trim())
-    .filter((line) => line && !line.startsWith('#') && !/^https?:\/\//i.test(line));
-}
-
-function findTerm(lines) {
-  for (const line of lines) {
-    const heading = line.match(/^[《「]?([\p{Script=Han}]{1,12})[》」]?(?=\s|[A-Za-z（(“"])/u);
-    if (heading) return heading[1];
-  }
-
-  for (const line of lines.filter(containsHan)) {
-    const definition = line.match(/^[《「]?([\p{Script=Han}]{1,10})[》」]?(?=形容|指|是|原|意指|（|\(|「|，|为)/u);
-    if (definition) return definition[1];
-  }
-
-  const fallback = lines.find(containsHan)?.match(/[\p{Script=Han}]{1,12}/u);
-  return fallback?.[0] || '';
 }
 
 async function loadWords() {

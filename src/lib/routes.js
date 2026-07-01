@@ -1,7 +1,29 @@
 export const siteBase = '/chinese';
+export const localeQueryValues = {
+  zh: 'zh-Hant',
+  en: 'en',
+  fr: 'fr',
+};
+
+const localeAliases = {
+  zh: 'zh',
+  'zh-hant': 'zh',
+  'zh-hant-tw': 'zh',
+  'zh-tw': 'zh',
+  en: 'en',
+  fr: 'fr',
+};
 
 export function slugify(value) {
   return encodeURIComponent(String(value).trim());
+}
+
+export function localeFromQuery(value) {
+  return localeAliases[String(value || '').trim().toLowerCase()] || 'zh';
+}
+
+export function localeQueryValue(locale) {
+  return localeQueryValues[locale] || localeQueryValues.zh;
 }
 
 export function unslugify(value) {
@@ -23,4 +45,3 @@ export function emotionPath(category) {
 export function homePath() {
   return `${siteBase}/`;
 }
-

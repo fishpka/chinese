@@ -12,7 +12,7 @@ import WordPage from './components/WordPage.jsx';
 import useTheme from './hooks/useTheme.js';
 import { trackEvent, trackPageView } from './lib/analytics/umami.js';
 import { getMillisecondsUntilNextTaipeiMidnight, getTaipeiDateKey, selectDailyEntries } from './lib/dailyWord.js';
-import { siteBase, unslugify } from './lib/routes.js';
+import { localeFromQuery, localeQueryValue, siteBase, unslugify } from './lib/routes.js';
 
 const pageSize = 24;
 const autocompleteLimit = 8;
@@ -101,9 +101,13 @@ function getRoute(pathname) {
   return { type: 'home' };
 }
 
+function getLocaleFromLocation() {
+  return localeFromQuery(new URLSearchParams(window.location.search).get('lang'));
+}
+
 export default function App() {
   const [query, setQuery] = useState('');
-  const [locale, setLocale] = useState('zh');
+  const [locale, setLocale] = useState(getLocaleFromLocation);
   const [currentPage, setCurrentPage] = useState(1);
   const [pathname, setPathname] = useState(() => window.location.pathname);
   const [dailyWordKey, setDailyWordKey] = useState(() => getTaipeiDateKey());
@@ -166,7 +170,10 @@ export default function App() {
   }, [dailyWordKey]);
 
   useEffect(() => {
-    const handleLocationChange = () => setPathname(window.location.pathname);
+    const handleLocationChange = () => {
+      setPathname(window.location.pathname);
+      setLocale(getLocaleFromLocation());
+    };
     window.addEventListener('popstate', handleLocationChange);
     return () => window.removeEventListener('popstate', handleLocationChange);
   }, []);
@@ -244,6 +251,9 @@ export default function App() {
       from: locale,
       to: nextLocale,
     });
+    const nextUrl = new URL(window.location.href);
+    nextUrl.searchParams.set('lang', localeQueryValue(nextLocale));
+    window.history.replaceState(null, '', `${nextUrl.pathname}${nextUrl.search}${nextUrl.hash}`);
     setLocale(nextLocale);
   }
 
