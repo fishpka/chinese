@@ -1,7 +1,13 @@
 import { mkdir, readFile, writeFile } from 'node:fs/promises';
 import { existsSync } from 'node:fs';
 import path from 'node:path';
-import { cleanLines, findTerm } from '../src/data/termExtraction.js';
+import {
+  cleanLines,
+  containsHan,
+  findTerm,
+  getCategory,
+  inferEmotions,
+} from '../src/data/termExtraction.js';
 
 const siteBase = '/chinese';
 const siteOrigin = 'https://fishpka.github.io';
@@ -37,6 +43,10 @@ function encodeSlug(value) {
   }
 }
 
+function encodeRouteSegment(value) {
+  return encodeURIComponent(String(value || '').trim().replaceAll('/', '／'));
+}
+
 function collectWords(value, words = []) {
   if (!value) return words;
 
@@ -70,40 +80,53 @@ async function loadWords() {
     return {
       source: path.relative(rootDir, wordsJsonPath),
       words: collectWords(source),
+      emotions: [],
     };
   }
 
   const sourceText = await readFile(fallbackSourcePath, 'utf8');
   const seenTerms = new Set();
-  const words = sourceText
+  const entries = sourceText
     .split(/\r?\n\s*_{8,}\s*\r?\n/g)
-    .map((block) => findTerm(cleanLines(block)))
-    .filter((term) => {
+    .map((block) => {
+      const lines = cleanLines(block);
+      if (!lines.some(containsHan)) return null;
+      const term = findTerm(lines);
       if (!term || seenTerms.has(term)) return false;
       seenTerms.add(term);
-      return true;
-    });
+      const searchableText = lines.join(' ');
+      const category = getCategory(term, searchableText);
+      return {
+        term,
+        category,
+        emotions: inferEmotions(searchableText, category),
+      };
+    })
+    .filter(Boolean);
 
   return {
     source: path.relative(rootDir, fallbackSourcePath),
-    words,
+    words: entries.map((entry) => entry.term),
+    emotions: [...new Set(entries.flatMap((entry) => [entry.category, ...entry.emotions]))],
   };
 }
 
-function buildSitemap(words) {
+function buildSitemap(words, emotions = []) {
   const lastmod = new Date().toISOString().slice(0, 10);
   const urls = [
     `${siteUrl}/`,
     ...[...new Set(words.map(encodeSlug).filter(Boolean))]
       .map((slug) => `${siteUrl}/word/${slug}/`),
+    ...[...new Set(emotions.map(encodeRouteSegment).filter(Boolean))]
+      .map((slug) => `${siteUrl}/emotion/${slug}/`),
   ];
 
   return `<?xml version="1.0" encoding="UTF-8"?>\n<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">\n${urls.map((url, index) => `  <url>\n    <loc>${escapeXml(url)}</loc>\n    <lastmod>${lastmod}</lastmod>\n    <changefreq>${index === 0 ? 'weekly' : 'monthly'}</changefreq>\n    <priority>${index === 0 ? '1.0' : '0.7'}</priority>\n  </url>`).join('\n')}\n</urlset>\n`;
 }
 
-const { source, words } = await loadWords();
+const { source, words, emotions } = await loadWords();
 
 await mkdir(publicDir, { recursive: true });
-await writeFile(sitemapPath, buildSitemap(words));
+await writeFile(sitemapPath, buildSitemap(words, emotions));
 
-console.log(`Generated public/sitemap.xml from ${source} with ${words.length} word entries`);
+console.log(`Generated public/sitemap.xml from ${source} with ${words.length} word entries and ${emotions.length} emotion entries`);
