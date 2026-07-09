@@ -20,7 +20,7 @@ export default function Hero({ messages }) {
           {...reveal(0.07)}
           className="mt-8 max-w-4xl text-[clamp(2.5rem,6.2vw,5.5rem)] font-medium leading-[1.03] tracking-[-0.075em]"
         >
-          Not just translation,
+          {messages.heroTitle}
           <span className="block text-accent dark:text-accent-soft">{messages.heroAccent}</span>
         </motion.h1>
         <motion.p
