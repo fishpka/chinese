@@ -29,6 +29,9 @@ for (const url of urls) {
     assert(expected.includes(target), `${file}: internal link not in canonical route set: ${target}`);
   }
   assert(!html.includes('content="noindex'), `${file}: unexpectedly noindex`);
+  const csp = html.match(/http-equiv="Content-Security-Policy" content="([^"]+)"/)[1];
+  const connectSources = csp.split(';').find((directive) => directive.trim().startsWith('connect-src ')).trim().split(/\s+/);
+  assert(connectSources.includes('https://gateway.umami.is'), `${file}: Umami collection endpoint blocked by CSP`);
   const schema = JSON.parse(html.match(/<script type="application\/ld\+json">([\s\S]*?)<\/script>/)[1]);
   assert.equal(schema.url, url, `${file}: structured data URL mismatch`);
   for (const match of html.matchAll(/(?:src|href)="(\/chinese\/assets\/[^"?#]+)"/g)) {

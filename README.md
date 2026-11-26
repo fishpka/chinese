@@ -45,3 +45,16 @@ the source content file, not the build date.
 After deploying, submit `https://fishpka.github.io/chinese/sitemap.xml` in Google
 Search Console and inspect representative home, word and emotion URLs. Local
 validation cannot determine Google's selected canonical or guarantee indexing.
+
+
+## Umami tracking and CSP
+
+Umami Cloud loads its script from `https://cloud.umami.is/script.js` but sends
+tracking requests to `https://gateway.umami.is/api/send`. Keep the script origin
+in CSP `script-src` and the collection origin in `connect-src`. The SEO check
+validates the collection origin on every generated canonical page.
+
+After deploying, open browser DevTools → Network and confirm the script loads
+and `/api/send` succeeds, then check the matching website in Umami Realtime.
+Ad blockers, tracking opt-out and an incorrect website ID can still prevent
+tracking; do not add an Umami dashboard API secret to frontend environment vars.
