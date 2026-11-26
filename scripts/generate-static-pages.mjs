@@ -40,7 +40,7 @@ for (const emotion of emotions) {
   const url = emotionUrl(emotion);
   await writePage(url, {
     title: `${emotion}｜中文語境`, description: `探索「${emotion}」相關的中文詞語、成語與文化語境。`,
-    content: `<nav>${link(siteUrl, '中文語境首頁')}</nav><h1>${e(emotion)}</h1><p>共 ${selected.length} 個相關詞語</p>${list(selected.map((entry) => `${link(wordUrl(entry.term), entry.term)}<p>${e(entry.content.zh.description)}</p>`))}`,
+    content: `<nav>${link(siteUrl, '中文語境首頁')}</nav><h1>${e(emotion)}</h1><p>共 ${selected.length} 個相關詞語</p><h2>${e(emotion)}相關詞語</h2>${list(selected.map((entry) => `${link(wordUrl(entry.term), entry.term)}<p>${e(entry.content.zh.description)}</p>`))}`,
     schema: { '@context': 'https://schema.org', '@type': 'CollectionPage', name: `${emotion}｜中文語境`, url, mainEntity: { '@type': 'ItemList', itemListElement: selected.map((entry, index) => ({ '@type': 'ListItem', position: index + 1, name: entry.term, url: wordUrl(entry.term) })) } },
   });
 }

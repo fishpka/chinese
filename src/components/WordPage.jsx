@@ -104,8 +104,8 @@ export default function WordPage({ entry, entries, locale, messages }) {
 function Detail({ label, text, emphasized = false }) {
   return (
     <div className="grid gap-2 sm:grid-cols-[6rem_1fr]">
-      <dt className="label">{label}</dt>
-      <dd className={emphasized ? 'text-ink dark:text-moon' : 'text-muted dark:text-muted-dark'}>{text}</dd>
+      <h2 className="label">{label}</h2>
+      <p className={emphasized ? 'text-ink dark:text-moon' : 'text-muted dark:text-muted-dark'}>{text}</p>
     </div>
   );
 }

@@ -57,7 +57,9 @@ export default function EmotionPage({ category, entries, messages }) {
         </div>
       </section>
 
-      <section className="mt-10 grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+      <section className="mt-10" aria-labelledby="category-words-heading">
+        <h2 id="category-words-heading" className="mb-5 text-xl font-medium">{category} — {messages.relatedWords}</h2>
+        <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
         {categoryEntries.map((entry) => (
           <a
             key={entry.id}
@@ -81,6 +83,7 @@ export default function EmotionPage({ category, entries, messages }) {
             </span>
           </a>
         ))}
+        </div>
       </section>
     </main>
   );

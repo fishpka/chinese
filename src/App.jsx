@@ -4,6 +4,7 @@ import { loadTeachingDatabase } from './data/teachingDatabase.js';
 import { copy, searchPrompts } from './i18n.js';
 import Header from './components/Header.jsx';
 import Hero from './components/Hero.jsx';
+import CategoryLinks from './components/CategoryLinks.jsx';
 import SearchPanel from './components/SearchPanel.jsx';
 import ExpressionCard from './components/ExpressionCard.jsx';
 import EmotionPage from './components/EmotionPage.jsx';
@@ -290,6 +291,7 @@ export default function App() {
         ) : (
           <>
             <Hero messages={messages} />
+            <CategoryLinks entries={database.entries} locale={locale} />
 
             <motion.section
               id="explore"
