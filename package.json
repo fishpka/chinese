@@ -10,7 +10,8 @@
     "predeploy": "npm run build",
     "deploy": "gh-pages -d dist",
     "lint": "eslint .",
-    "preview": "vite preview"
+    "preview": "vite preview",
+    "check:seo": "node scripts/check-seo.mjs"
   },
   "dependencies": {
     "@tailwindcss/vite": "^4.3.0",

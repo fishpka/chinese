@@ -15,7 +15,7 @@ const localeAliases = {
 };
 
 export function slugify(value) {
-  return encodeURIComponent(String(value).trim());
+  return encodeURIComponent(String(value).trim().replaceAll('/', '／'));
 }
 
 export function localeFromQuery(value) {

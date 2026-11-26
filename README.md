@@ -25,3 +25,23 @@ Set these environment variables before building or deploying:
 - `VITE_UMAMI_SCRIPT_SRC`
 - `VITE_UMAMI_WEBSITE_ID`
 - `VITE_UMAMI_HOST_URL` (optional)
+
+
+## Search indexing checks
+
+`npm run build` generates crawlable HTML for the home, word and emotion pages,
+then syncs it to the repository root for GitHub Pages. The static content and
+client application share the teaching-data parser and encoded route helpers.
+
+Run `npm run check:seo` after building to verify every sitemap URL has a matching
+static page, self-referencing canonical, parseable JSON-LD and available assets.
+The generated 404 page is `noindex` and has no homepage canonical.
+
+Only canonical primary URLs are listed in the sitemap. Language-query switches
+remain available in the app; hreflang annotations are omitted until independently
+indexable localized HTML variants are generated. Sitemap lastmod is derived from
+the source content file, not the build date.
+
+After deploying, submit `https://fishpka.github.io/chinese/sitemap.xml` in Google
+Search Console and inspect representative home, word and emotion URLs. Local
+validation cannot determine Google's selected canonical or guarantee indexing.
