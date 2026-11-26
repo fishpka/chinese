@@ -1,60 +1,51 @@
 <!doctype html>
-<html lang="zh-Hant">
+<html lang="zh-Hant" data-page-type="excluded">
   <head>
     <meta charset="UTF-8" />
     <link rel="icon" type="image/svg+xml" href="/chinese/favicon.svg" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <meta http-equiv="Content-Security-Policy" content="default-src 'self'; base-uri 'self'; object-src 'none'; frame-ancestors 'none'; script-src 'self' 'unsafe-inline' https://cloud.umami.is; connect-src 'self' https://cloud.umami.is https://gateway.umami.is; img-src 'self' data: https://fishpka.github.io; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com; upgrade-insecure-requests">
-    <meta name="description" content="「好书推荐」是什麼意思？了解這個成語的文化脈絡與情感意涵。">
-    <meta name="robots" content="index,follow,max-image-preview:large">
+    <meta name="description" content="書籍宣傳，不是獨立詞語教學">
+    <meta name="robots" content="noindex,follow">
     <meta name="google-site-verification" content="Sst54RP5Czda7qZKQHzUm-IYEHyZN5yd3WBqAsUyRxc" />
     <meta name="theme-color" content="#f2ead9" />
-    <link rel="canonical" href="https://fishpka.github.io/chinese/word/%E5%A5%BD%E4%B9%A6%E6%8E%A8%E8%8D%90/" />
-    <meta property="og:site_name" content="中文語境｜Chinese Nuance Archive" />
+
+    <meta property="og:site_name" content="中文成語與詞語解釋｜Learn Chinese Idioms - 中文語境" />
     <meta property="og:type" content="website" />
-    <meta property="og:title" content="好书推荐｜成語 - 中文語境" />
-    <meta property="og:description" content="「好书推荐」是什麼意思？了解這個成語的文化脈絡與情感意涵。" />
-    <meta property="og:url" content="https://fishpka.github.io/chinese/word/%E5%A5%BD%E4%B9%A6%E6%8E%A8%E8%8D%90/" />
+    <meta property="og:title" content="好书推荐｜資料待整理 - 中文語境" />
+    <meta property="og:description" content="書籍宣傳，不是獨立詞語教學" />
+    <meta property="og:url" content="https://fishpka.github.io/chinese/" />
     <meta property="og:image" content="https://fishpka.github.io/chinese/ogimage.jpg" />
     <meta property="og:image:width" content="1200" />
     <meta property="og:image:height" content="630" />
     <meta property="og:image:type" content="image/jpeg" />
     <meta name="twitter:card" content="summary_large_image" />
-    <meta name="twitter:title" content="好书推荐｜成語 - 中文語境" />
-    <meta name="twitter:description" content="「好书推荐」是什麼意思？了解這個成語的文化脈絡與情感意涵。" />
+    <meta name="twitter:title" content="好书推荐｜資料待整理 - 中文語境" />
+    <meta name="twitter:description" content="書籍宣傳，不是獨立詞語教學" />
     <meta name="twitter:image" content="https://fishpka.github.io/chinese/ogimage.jpg" />
-    <script type="application/ld+json">{"@context":"https://schema.org","@type":"DefinedTerm","name":"好书推荐","description":"好书推荐：十六岁的壮游课 旅行路上偶尔会遇见年轻的背包客，十八、九岁就离家到异国旅行。出门在外所有事都靠自己，从预订机票办理签证、行程中的食衣住行育乐、生活上的打水煮饭⋯⋯样样都得亲力亲为。除了独立自主，他们各个口齿一伶俐、能言善辩，无论人生经验多寡，都勇于表达自己的想法，也累积了一身的好故事。 准备好要踏上旅程了吗？在出发之前，不妨用十二 位旅人的视角开启对世界的想像。而在抵达之后，请抛下书中叙述的种种，放大自己的五感，用肉身体验截然不同的文化。","url":"https://fishpka.github.io/chinese/word/%E5%A5%BD%E4%B9%A6%E6%8E%A8%E8%8D%90/","inDefinedTermSet":{"@type":"DefinedTermSet","name":"中文語境","url":"https://fishpka.github.io/chinese/"}}</script>
-    <style id="startup-styles">
-      html { background: #f2ead9; color: #312d27; }
-      body { margin: 0; }
-      html.app-loading #root { visibility: hidden; }
-      html.app-loading::before {
-        content: "載入中文語境…";
-        position: fixed;
-        inset: 0;
-        z-index: 50;
-        display: grid;
-        place-items: center;
-        background: #f2ead9;
-        color: #766d5f;
-        font: 16px/1.6 system-ui, sans-serif;
-      }
-    </style>
+
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@400;500;600;700&amp;display=swap" media="print" onload="this.media='all'" />
+    <noscript><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@400;500;600;700&amp;display=swap" /></noscript>
+    <style>html{background:#f2ead9;color:#312d27}html.dark{background:#211e1a;color:#ede4d2}body{margin:0}</style>
     <script>
-      document.documentElement.classList.add('app-loading');
-      window.__startupFallback = window.setTimeout(function () {
-        document.documentElement.classList.remove('app-loading');
-      }, 4000);
+      try {
+        var storedTheme = localStorage.getItem('yujing-theme');
+        var useDark = storedTheme === 'dark' || (!storedTheme && matchMedia('(prefers-color-scheme: dark)').matches);
+        document.documentElement.classList.toggle('dark', useDark);
+        document.documentElement.style.colorScheme = useDark ? 'dark' : 'light';
+      } catch { /* Static content remains readable without storage. */ }
     </script>
-    <title>好书推荐｜成語 - 中文語境</title>
-    <script type="module" crossorigin src="/chinese/assets/index-BwUteQGE-mwxbknt1.js"></script>
-    <link rel="stylesheet" crossorigin href="/chinese/assets/index-DYpuxsiT-mwxbknt1.css">
+    <title>好书推荐｜資料待整理 - 中文語境</title>
+    <script type="module" crossorigin src="/chinese/assets/index-CdscpnPp-mwxc9pzf.js"></script>
+    <link rel="stylesheet" crossorigin href="/chinese/assets/index-C7RG7mTn-mwxc9pzf.css">
   </head>
   <body>
-    <div id="root"><main class="static-archive" style="max-width:72rem;margin:auto;padding:2rem;line-height:1.8"><nav><a href="https://fishpka.github.io/chinese/">中文語境首頁</a></nav><h1>好书推荐</h1><p><a href="https://fishpka.github.io/chinese/emotion/%E6%88%90%E8%AA%9E/">成語</a></p><section><h2>中文解釋</h2><p>好书推荐：十六岁的壮游课 旅行路上偶尔会遇见年轻的背包客，十八、九岁就离家到异国旅行。出门在外所有事都靠自己，从预订机票办理签证、行程中的食衣住行育乐、生活上的打水煮饭⋯⋯样样都得亲力亲为。除了独立自主，他们各个口齿一伶俐、能言善辩，无论人生经验多寡，都勇于表达自己的想法，也累积了一身的好故事。 准备好要踏上旅程了吗？在出发之前，不妨用十二 位旅人的视角开启对世界的想像。而在抵达之后，请抛下书中叙述的种种，放大自己的五感，用肉身体验截然不同的文化。</p></section><section><h2>English</h2><p>Book Recommendation: The Adventurous Course of Being 16 While traveling, one might occasionally encounter young backpackers who set out on foreign journeys at the age of 18 or 19. Away from home, they rely entirely on themselves, handling everything from booking flights and obtaining visas to managing food, clothing, shelter, transportation, education, and leisure during their travels, as well as mundane tasks like fetching water and cooking. Besides being independent, they are articulate and eloquent, unafraid to express their thoughts regardless of their life experiences, and have accumulated a wealth of stories. Are you ready to embark on a journey? Before you set off, why not imagine the world through the perspectives of these twelve travelers? And after arriving, cast aside the various narratives described in the book, heighten your senses, and immerse yourself in experiencing vastly different cultures firsthand.</p></section><section><h2>Français</h2><p>Book Recommendation: The Adventurous Course of Being 16 While traveling, one might occasionally encounter young backpackers who set out on foreign journeys at the age of 18 or 19. Away from home, they rely entirely on themselves, handling everything from booking flights and obtaining visas to managing food, clothing, shelter, transportation, education, and leisure during their travels, as well as mundane tasks like fetching water and cooking. Besides being independent, they are articulate and eloquent, unafraid to express their thoughts regardless of their life experiences, and have accumulated a wealth of stories. Are you ready to embark on a journey? Before you set off, why not imagine the world through the perspectives of these twelve travelers? And after arriving, cast aside the various narratives described in the book, heighten your senses, and immerse yourself in experiencing vastly different cultures firsthand.</p></section><section><h2>相關詞語</h2><ul><li><a href="https://fishpka.github.io/chinese/word/%E4%BA%BA%E5%BF%83%E9%99%A9%E6%81%B6/">人心险恶</a></li><li><a href="https://fishpka.github.io/chinese/word/%E6%82%A3%E5%BE%97%E6%82%A3%E5%A4%B1/">患得患失</a></li><li><a href="https://fishpka.github.io/chinese/word/%E6%97%A0%E8%8D%AF%E5%8F%AF%E6%95%91/">无药可救</a></li><li><a href="https://fishpka.github.io/chinese/word/%E7%99%BB%E5%B3%B0%E9%80%A0%E6%9E%81/">登峰造极</a></li><li><a href="https://fishpka.github.io/chinese/word/%E6%96%99%E4%BA%8B%E5%A6%82%E7%A5%9E/">料事如神</a></li><li><a href="https://fishpka.github.io/chinese/word/%E9%98%AE%E5%9B%8A%E7%BE%9E%E6%B6%A9/">阮囊羞涩</a></li><li><a href="https://fishpka.github.io/chinese/word/%E5%8A%9F%E5%BE%B7%E6%97%A0%E9%87%8F/">功德无量</a></li><li><a href="https://fishpka.github.io/chinese/word/%E5%85%81%E6%96%87%E5%85%81%E6%AD%A6/">允文允武</a></li></ul></section></main></div>
+    <div id="root"><main class="mx-auto max-w-7xl px-5 py-10"><h1>資料待整理</h1><p>書籍宣傳，不是獨立詞語教學</p><nav><a href="https://fishpka.github.io/chinese/">返回詞庫</a></nav><section><h2>原始資料（尚未列為教學詞條）</h2><p>Book Recommendation: The Adventurous Course of Being 16 While traveling, one might occasionally encounter young backpackers who set out on foreign journeys at the age of 18 or 19. Away from home, they rely entirely on themselves, handling everything from booking flights and obtaining visas to managing food, clothing, shelter, transportation, education, and leisure during their travels, as well as mundane tasks like fetching water and cooking. Besides being independent, they are articulate and eloquent, unafraid to express their thoughts regardless of their life experiences, and have accumulated a wealth of stories. Are you ready to embark on a journey? Before you set off, why not imagine the world through the perspectives of these twelve travelers? And after arriving, cast aside the various narratives described in the book, heighten your senses, and immerse yourself in experiencing vastly different cultures firsthand. 好书推荐：十六岁的壮游课 旅行路上偶尔会遇见年轻的背包客，十八、九岁就离家到异国旅行。出门在外所有事都靠自己，从预订机票办理签证、行程中的食衣住行育乐、生活上的打水煮饭⋯⋯样样都得亲力亲为。除了独立自主，他们各个口齿一伶俐、能言善辩，无论人生经验多寡，都勇于表达自己的想法，也累积了一身的好故事。 准备好要踏上旅程了吗？在出发之前，不妨用十二 位旅人的视角开启对世界的想像。而在抵达之后，请抛下书中叙述的种种，放大自己的五感，用肉身体验截然不同的文化。</p></section><section><h2>原始資料（尚未列為教學詞條）</h2><p>Good book recommendation: There is a Kind of Work Called Life, What I Learned After Quitting. An ideal life doesn&#39;t necessarily have to be built with money; some of the things we desire can be obtained without spending money. 好书推荐：有一种工作叫生活，离职后我学到的事。理想的生活不一定要用钱堆出来，有些我们想要的东西，不用钱也能拥有。 Recommandation de livre : Il y a un type de travail appelé Vie, Ce que j&#39;ai appris après avoir démissionné. Une vie idéale n&#39;a pas nécessairement besoin d&#39;être construite avec de l&#39;argent ; certaines choses que nous désirons peuvent être obtenues sans dépenser d&#39;argent.</p></section></main></div>
     <noscript>
       <div style="padding: 2rem; font-family: system-ui, sans-serif; line-height: 1.6;">
-        This site needs JavaScript to search and explore Chinese words, emotions, and cultural context. Please enable JavaScript to continue.
+        教學內容與分類連結可直接閱讀；啟用 JavaScript 可使用搜尋、語言與主題切換。
       </div>
     </noscript>
   </body>

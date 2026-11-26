@@ -1,60 +1,51 @@
 <!doctype html>
-<html lang="zh-Hant">
+<html lang="zh-Hant" data-page-type="excluded">
   <head>
     <meta charset="UTF-8" />
     <link rel="icon" type="image/svg+xml" href="/chinese/favicon.svg" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <meta http-equiv="Content-Security-Policy" content="default-src 'self'; base-uri 'self'; object-src 'none'; frame-ancestors 'none'; script-src 'self' 'unsafe-inline' https://cloud.umami.is; connect-src 'self' https://cloud.umami.is https://gateway.umami.is; img-src 'self' data: https://fishpka.github.io; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com; upgrade-insecure-requests">
-    <meta name="description" content="探索中文詞語、成語與文化詞彙，透過中英法解釋、例句與情緒分類，理解詞語背後的文化脈絡與使用情境。">
+    <meta name="description" content="找不到這個網址，請返回中文語境詞庫。">
     <meta name="robots" content="noindex,follow">
     <meta name="google-site-verification" content="Sst54RP5Czda7qZKQHzUm-IYEHyZN5yd3WBqAsUyRxc" />
     <meta name="theme-color" content="#f2ead9" />
 
-    <meta property="og:site_name" content="中文語境｜Chinese Nuance Archive" />
+    <meta property="og:site_name" content="中文成語與詞語解釋｜Learn Chinese Idioms - 中文語境" />
     <meta property="og:type" content="website" />
-    <meta property="og:title" content="中文語境｜Chinese Nuance Archive" />
-    <meta property="og:description" content="探索中文詞語、成語與文化詞彙，透過中英法解釋、例句與情緒分類，理解詞語背後的文化脈絡與使用情境。" />
+    <meta property="og:title" content="找不到頁面｜中文語境" />
+    <meta property="og:description" content="找不到這個網址，請返回中文語境詞庫。" />
     <meta property="og:url" content="https://fishpka.github.io/chinese/" />
     <meta property="og:image" content="https://fishpka.github.io/chinese/ogimage.jpg" />
     <meta property="og:image:width" content="1200" />
     <meta property="og:image:height" content="630" />
     <meta property="og:image:type" content="image/jpeg" />
     <meta name="twitter:card" content="summary_large_image" />
-    <meta name="twitter:title" content="中文語境｜Chinese Nuance Archive" />
-    <meta name="twitter:description" content="探索中文詞語、成語與文化詞彙，透過中英法解釋、例句與情緒分類，理解詞語背後的文化脈絡與使用情境。" />
+    <meta name="twitter:title" content="找不到頁面｜中文語境" />
+    <meta name="twitter:description" content="找不到這個網址，請返回中文語境詞庫。" />
     <meta name="twitter:image" content="https://fishpka.github.io/chinese/ogimage.jpg" />
 
-    <style id="startup-styles">
-      html { background: #f2ead9; color: #312d27; }
-      body { margin: 0; }
-      html.app-loading #root { visibility: hidden; }
-      html.app-loading::before {
-        content: "載入中文語境…";
-        position: fixed;
-        inset: 0;
-        z-index: 50;
-        display: grid;
-        place-items: center;
-        background: #f2ead9;
-        color: #766d5f;
-        font: 16px/1.6 system-ui, sans-serif;
-      }
-    </style>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@400;500;600;700&amp;display=swap" media="print" onload="this.media='all'" />
+    <noscript><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@400;500;600;700&amp;display=swap" /></noscript>
+    <style>html{background:#f2ead9;color:#312d27}html.dark{background:#211e1a;color:#ede4d2}body{margin:0}</style>
     <script>
-      document.documentElement.classList.add('app-loading');
-      window.__startupFallback = window.setTimeout(function () {
-        document.documentElement.classList.remove('app-loading');
-      }, 4000);
+      try {
+        var storedTheme = localStorage.getItem('yujing-theme');
+        var useDark = storedTheme === 'dark' || (!storedTheme && matchMedia('(prefers-color-scheme: dark)').matches);
+        document.documentElement.classList.toggle('dark', useDark);
+        document.documentElement.style.colorScheme = useDark ? 'dark' : 'light';
+      } catch { /* Static content remains readable without storage. */ }
     </script>
     <title>找不到頁面｜中文語境</title>
-    <script type="module" crossorigin src="/chinese/assets/index-BwUteQGE-mwxbknt1.js"></script>
-    <link rel="stylesheet" crossorigin href="/chinese/assets/index-DYpuxsiT-mwxbknt1.css">
+    <script type="module" crossorigin src="/chinese/assets/index-CdscpnPp-mwxc9pzf.js"></script>
+    <link rel="stylesheet" crossorigin href="/chinese/assets/index-C7RG7mTn-mwxc9pzf.css">
   </head>
   <body>
     <div id="root"><main><h1>找不到頁面</h1><a href="https://fishpka.github.io/chinese/">返回中文語境首頁</a></main></div>
     <noscript>
       <div style="padding: 2rem; font-family: system-ui, sans-serif; line-height: 1.6;">
-        This site needs JavaScript to search and explore Chinese words, emotions, and cultural context. Please enable JavaScript to continue.
+        教學內容與分類連結可直接閱讀；啟用 JavaScript 可使用搜尋、語言與主題切換。
       </div>
     </noscript>
   </body>

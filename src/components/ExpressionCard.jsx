@@ -17,7 +17,7 @@ export default function ExpressionCard({ entry, locale, messages, index, reduceM
     <motion.article
       layout
       className="expression-card group border border-line bg-paper p-6 transition-colors hover:border-ink/40 dark:border-line-dark dark:bg-panel dark:hover:border-moon/35 sm:p-8"
-      initial={reduceMotion ? false : { opacity: 0, y: 15 }}
+      initial={false}
       animate={{ opacity: 1, y: 0 }}
       exit={reduceMotion ? { opacity: 0 } : { opacity: 0, y: -10 }}
       transition={{ duration: reduceMotion ? 0 : 0.38, delay: reduceMotion ? 0 : index * 0.035, ease: [0.16, 1, 0.3, 1] }}
@@ -36,7 +36,7 @@ export default function ExpressionCard({ entry, locale, messages, index, reduceM
 function ReadCard({ entry, example, locale, messages, reduceMotion }) {
   return (
     <motion.div
-      initial={reduceMotion ? false : { opacity: 0 }}
+      initial={false}
       animate={{ opacity: 1 }}
       exit={reduceMotion ? undefined : { opacity: 0 }}
       transition={{ duration: reduceMotion ? 0 : 0.2 }}

@@ -15,8 +15,9 @@ export function ensureUmamiScript() {
   script.dataset.umamiManaged = 'true';
   if (HOST_URL) script.dataset.hostUrl = HOST_URL;
 
-  document.head.appendChild(script);
   scriptLoadStarted = true;
+  script.addEventListener('error', () => { scriptLoadStarted = false; script.remove(); });
+  document.head.appendChild(script);
   return true;
 }
 
@@ -27,14 +28,6 @@ function getUmami() {
 
 export function isUmamiReady() {
   return typeof getUmami()?.track === 'function';
-}
-
-export function trackPageView({ url = `${window.location.pathname}${window.location.search}${window.location.hash}`, title = document.title } = {}) {
-  const tracker = getUmami();
-  if (typeof tracker?.track !== 'function') return false;
-
-  tracker.track({ website: WEBSITE_ID, url, title });
-  return true;
 }
 
 export function trackEvent(name, data = {}) {

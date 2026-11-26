@@ -20,7 +20,7 @@ export const copy = {
     themeLight: '切換為淺色模式',
     themeDark: '切換為深色模式',
     heroLabel: '語感反查 / 卷一',
-    heroTitle: '中文，不只是文字。',
+    heroTitle: '中文成語與詞語，不只是文字。',
     heroAccent: '探索詞語背後的情感、文化與故事。',
     heroBody: '不知道該怎麼形容那種感覺？從情緒出發，找到中文裡更貼近的詞語與語感。這是一個好用的中文語感工具。',
     verse: '情生於辭間',

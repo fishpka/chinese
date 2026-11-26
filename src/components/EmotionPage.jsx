@@ -21,7 +21,7 @@ export default function EmotionPage({ category, entries, messages }) {
     .slice(0, 12);
 
   return (
-    <main className="mx-auto max-w-7xl px-5 py-10 sm:px-8 lg:px-12 lg:py-14">
+    <section className="mx-auto max-w-7xl px-5 py-10 sm:px-8 lg:px-12 lg:py-14">
       <a
         className="inline-flex items-center gap-2 text-sm text-muted hover:text-ink dark:text-muted-dark dark:hover:text-moon"
         href={homePath()}
@@ -85,6 +85,6 @@ export default function EmotionPage({ category, entries, messages }) {
         ))}
         </div>
       </section>
-    </main>
+    </section>
   );
 }

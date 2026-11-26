@@ -1,4 +1,5 @@
-import { useEffect, useLayoutEffect, useMemo, useState } from 'react';
+import { matchesQuery, scoreAutocompleteMatch } from './lib/search.js';
+import { useEffect, useMemo, useState } from 'react';
 import { AnimatePresence, motion, useReducedMotion } from 'framer-motion';
 import { loadTeachingDatabase } from './data/teachingDatabase.js';
 import { copy, searchPrompts } from './i18n.js';
@@ -11,66 +12,12 @@ import EmotionPage from './components/EmotionPage.jsx';
 import Pagination from './components/Pagination.jsx';
 import WordPage from './components/WordPage.jsx';
 import useTheme from './hooks/useTheme.js';
-import { trackEvent, trackPageView } from './lib/analytics/umami.js';
+import { trackEvent } from './lib/analytics/umami.js';
 import { getMillisecondsUntilNextTaipeiMidnight, getTaipeiDateKey, selectDailyEntries } from './lib/dailyWord.js';
 import { localeFromQuery, localeQueryValue, siteBase, unslugify } from './lib/routes.js';
 
 const pageSize = 24;
 const autocompleteLimit = 8;
-const searchCharacterMap = {
-  慮: '虑', 獨: '独', 曖: '暧', 無: '无', 懷: '怀', 舊: '旧', 關: '关',
-  係: '系', 複: '复', 雜: '杂', 藥: '药', 救: '救', 險: '险', 惡: '恶',
-  詞: '词', 語: '语', 節: '节', 氣: '气', 憶: '忆', 戀: '恋', 寫: '写',
-  說: '说', 離: '离', 疏: '疏', 鬱: '郁', 煩: '烦', 憂: '忧',
-};
-
-function normalizeSearchText(value) {
-  return value
-    .toLocaleLowerCase()
-    .replace(/./gu, (character) => searchCharacterMap[character] || character)
-    .replace(/[^\p{Script=Han}\p{Letter}\p{Number}]+/gu, '');
-}
-
-function includesCharactersInOrder(haystack, needle) {
-  let position = 0;
-
-  for (const character of needle) {
-    position = haystack.indexOf(character, position);
-    if (position === -1) return false;
-    position += character.length;
-  }
-
-  return true;
-}
-
-function matchesQuery(entry, query) {
-  if (!query.trim()) return true;
-
-  const needle = normalizeSearchText(query);
-  const haystack = normalizeSearchText(entry.searchableText);
-  return haystack.includes(needle) || includesCharactersInOrder(haystack, needle);
-}
-
-function scoreAutocompleteMatch(entry, query) {
-  const needle = normalizeSearchText(query);
-  if (!needle) return 0;
-
-  const term = normalizeSearchText(entry.editable.term || entry.term);
-  const emotions = normalizeSearchText(entry.editable.emotions.join(''));
-  const category = normalizeSearchText(entry.category);
-  const searchableText = normalizeSearchText(entry.searchableText);
-
-  if (term === needle) return 120;
-  if (term.startsWith(needle)) return 100 - term.length;
-  if (term.includes(needle)) return 86 - term.indexOf(needle);
-  if (emotions.includes(needle)) return 78;
-  if (category.includes(needle)) return 70;
-  if (includesCharactersInOrder(term, needle)) return 62 - Math.max(0, term.length - needle.length);
-  if (searchableText.includes(needle)) return 42;
-  if (includesCharactersInOrder(searchableText, needle)) return 24;
-  return 0;
-}
-
 function getAutocompleteSuggestions(entries, query) {
   if (!query.trim()) return [];
 
@@ -103,23 +50,18 @@ function getRoute(pathname) {
 }
 
 function getLocaleFromLocation() {
-  return localeFromQuery(new URLSearchParams(window.location.search).get('lang'));
+  return typeof window === 'undefined' ? 'zh' : localeFromQuery(new URLSearchParams(window.location.search).get('lang'));
 }
 
-export default function App() {
+export default function App({ initialDatabase, initialPathname, initialLocale } = {}) {
   const [query, setQuery] = useState('');
-  const [locale, setLocale] = useState(getLocaleFromLocation);
+  const [locale, setLocale] = useState(() => initialLocale || getLocaleFromLocation());
   const [currentPage, setCurrentPage] = useState(1);
-  const [pathname, setPathname] = useState(() => window.location.pathname);
+  const [pathname, setPathname] = useState(() => initialPathname || (typeof window === 'undefined' ? '/chinese/' : window.location.pathname));
   const [dailyWordKey, setDailyWordKey] = useState(() => getTaipeiDateKey());
   const [randomWordsRefreshIndex, setRandomWordsRefreshIndex] = useState(0);
-  const [database, setDatabase] = useState({ source: 'Chinese-teaching.txt', total: 0, entries: [], loading: true });
+  const [database, setDatabase] = useState(() => initialDatabase ? { ...initialDatabase, loading: false } : { source: 'Chinese-teaching.txt', total: 0, entries: [], loading: true });
   const { theme, toggleTheme } = useTheme();
-  useLayoutEffect(() => {
-    if (database.loading) return;
-    document.documentElement.classList.remove('app-loading');
-    window.clearTimeout(window.__startupFallback);
-  }, [database.loading]);
   const reduceMotion = useReducedMotion();
   const messages = copy[locale];
   const route = useMemo(() => getRoute(pathname), [pathname]);
@@ -159,7 +101,7 @@ export default function App() {
   const transition = reduceMotion ? { duration: 0 } : { duration: 0.42, ease: [0.16, 1, 0.3, 1] };
   const routedEntry = useMemo(() => (
     route.type === 'word'
-      ? database.entries.find((entry) => entry.editable.term === route.value || entry.term === route.value)
+      ? database.entries.find((entry) => entry.editable.term === route.value || entry.term === route.value || entry.aliases?.includes(route.value))
       : null
   ), [database.entries, route]);
 
@@ -185,20 +127,7 @@ export default function App() {
   }, []);
 
   useEffect(() => {
-    const pageView = {
-      url: `${window.location.pathname}${window.location.search}${window.location.hash}`,
-      title: document.title,
-    };
-    if (trackPageView(pageView)) return undefined;
-
-    const timeoutId = window.setTimeout(() => {
-      trackPageView(pageView);
-    }, 1000);
-
-    return () => window.clearTimeout(timeoutId);
-  }, [pathname]);
-
-  useEffect(() => {
+    if (initialDatabase) return undefined;
     let active = true;
 
     loadTeachingDatabase()
@@ -217,7 +146,7 @@ export default function App() {
     return () => {
       active = false;
     };
-  }, []);
+  }, [initialDatabase]);
 
   useEffect(() => {
     const normalizedQuery = query.trim();
@@ -288,7 +217,7 @@ export default function App() {
         onLocaleChange={handleLocaleChange}
         onThemeToggle={handleThemeToggle}
       />
-      <main>
+      <main id="main-content">
         {route.type === 'word' && routedEntry ? (
           <WordPage entry={routedEntry} entries={database.entries} locale={locale} messages={messages} />
         ) : route.type === 'emotion' ? (
@@ -301,7 +230,7 @@ export default function App() {
             <motion.section
               id="explore"
               className="mx-auto max-w-7xl px-5 pb-20 sm:px-8 lg:px-12 lg:pb-28"
-              initial={reduceMotion ? false : { opacity: 0, y: 22 }}
+              initial={false}
               whileInView={{ opacity: 1, y: 0 }}
               viewport={{ once: true, margin: '-80px' }}
               transition={transition}

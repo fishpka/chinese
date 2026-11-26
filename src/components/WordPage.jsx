@@ -50,7 +50,7 @@ export default function WordPage({ entry, entries, locale, messages }) {
   const recommendedEntries = getRecommendedEntries(entry, entries);
 
   return (
-    <main className="mx-auto max-w-7xl px-5 py-10 sm:px-8 lg:px-12 lg:py-14">
+    <article className="mx-auto max-w-7xl px-5 py-10 sm:px-8 lg:px-12 lg:py-14">
       <a
         className="inline-flex items-center gap-2 text-sm text-muted hover:text-ink dark:text-muted-dark dark:hover:text-moon"
         href={homePath()}
@@ -97,7 +97,7 @@ export default function WordPage({ entry, entries, locale, messages }) {
         <LinkSection icon={<Tags size={17} />} title={messages.sameEmotionWords} entries={sameEmotionEntries} source="same_emotion_words" messages={messages} />
         <LinkSection icon={<BookOpen size={17} />} title={messages.recommendedReading} entries={recommendedEntries} source="recommended_reading" messages={messages} />
       </div>
-    </main>
+    </article>
   );
 }
 

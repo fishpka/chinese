@@ -8,7 +8,7 @@ export default function Header({ locale, messages, theme, onLocaleChange, onThem
   return (
     <motion.header
       className="site-header sticky top-0 z-30 border-b border-line bg-canvas/90 backdrop-blur-xl dark:border-line-dark dark:bg-night/88"
-      initial={{ opacity: 0, y: -12 }}
+      initial={false}
       animate={{ opacity: 1, y: 0 }}
       transition={{ duration: 0.5, ease: [0.16, 1, 0.3, 1] }}
     >

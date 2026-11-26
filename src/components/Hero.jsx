@@ -5,7 +5,7 @@ import { trackEvent } from '../lib/analytics/umami.js';
 export default function Hero({ messages }) {
   const reduceMotion = useReducedMotion();
   const reveal = (delay) => ({
-    initial: reduceMotion ? false : { opacity: 0, y: 24 },
+    initial: false,
     animate: { opacity: 1, y: 0 },
     transition: { duration: reduceMotion ? 0 : 0.7, delay, ease: [0.16, 1, 0.3, 1] },
   });

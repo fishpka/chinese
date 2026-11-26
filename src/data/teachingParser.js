@@ -1,3 +1,4 @@
+import { correctedTerms, indexingReason, consolidateEntries } from './entryPolicy.js';
 import { cleanLines, containsHan, findTerm, getCategory, inferEmotions } from './termExtraction.js';
 
 const frenchSignals = /\b(?:le|la|les|des|une?|du|dans|cette?|est|sont|décrit|désigne|signifie|par exemple|ainsi|avec|pour|qui|l['’]|d['’])\b/giu;
@@ -57,29 +58,36 @@ function parseEntry(block, index) {
   if (!lines.some(containsHan)) return null;
 
   const sections = { zh: [], en: [], fr: [] };
-  lines.forEach((line) => sections[detectLanguage(line)].push(line));
+  // Some source paragraphs concatenate Chinese and French without a newline.
+  const languageLines = lines.flatMap((line) => line.replace(/([。！？])\s*(?=[\p{Script=Latin}])/gu, '$1\n').split('\n'));
+  languageLines.forEach((line) => sections[detectLanguage(line)].push(line));
 
-  const localized = fillLocalizedFallbacks(Object.fromEntries(
+  const providedContent = Object.fromEntries(
     Object.entries(sections).map(([language, languageLines]) => [
       language,
       splitExample(languageLines.join(' '), language),
     ]),
-  ));
-  const term = findTerm(lines);
+  );
+  const localized = fillLocalizedFallbacks(providedContent);
+  const legacyTerm = findTerm(lines);
+  const term = correctedTerms[legacyTerm] || legacyTerm;
   if (!term) return null;
 
   const searchableText = lines.join(' ');
   const category = getCategory(term, searchableText);
 
+  const reason = indexingReason({ term, legacyTerm, providedContent, baseSearchableText: searchableText });
+
   return {
+    legacyTerm, providedContent, indexable: !reason, exclusionReason: reason,
     id: `teaching-${index}-${term}`,
     term,
     category,
     content: localized,
     editable: {
       term,
-      english: localized.en.description,
-      french: localized.fr.description,
+      english: providedContent.en.description,
+      french: providedContent.fr.description,
       emotions: inferEmotions(searchableText, category),
       scenario: localized.zh.description,
     },
@@ -88,6 +96,10 @@ function parseEntry(block, index) {
   };
 }
 
-export function parseTeachingSource(sourceText) {
+export function parseTeachingRecords(sourceText) {
   return sourceText.split(/\r?\n\s*_{8,}\s*\r?\n/g).map(parseEntry).filter(Boolean);
+}
+
+export function parseTeachingSource(sourceText) {
+  return consolidateEntries(parseTeachingRecords(sourceText));
 }
