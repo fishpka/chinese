@@ -24,9 +24,31 @@
     <meta name="twitter:description" content="探索中文詞語、成語與文化詞彙，透過中英法解釋、例句與情緒分類，理解詞語背後的文化脈絡與使用情境。" />
     <meta name="twitter:image" content="https://fishpka.github.io/chinese/ogimage.jpg" />
 
+    <style id="startup-styles">
+      html { background: #f2ead9; color: #312d27; }
+      body { margin: 0; }
+      html.app-loading #root { visibility: hidden; }
+      html.app-loading::before {
+        content: "載入中文語境…";
+        position: fixed;
+        inset: 0;
+        z-index: 50;
+        display: grid;
+        place-items: center;
+        background: #f2ead9;
+        color: #766d5f;
+        font: 16px/1.6 system-ui, sans-serif;
+      }
+    </style>
+    <script>
+      document.documentElement.classList.add('app-loading');
+      window.__startupFallback = window.setTimeout(function () {
+        document.documentElement.classList.remove('app-loading');
+      }, 4000);
+    </script>
     <title>找不到頁面｜中文語境</title>
-    <script type="module" crossorigin src="/chinese/assets/index-Bx69TARw-mwxbb58r.js"></script>
-    <link rel="stylesheet" crossorigin href="/chinese/assets/index-DYpuxsiT-mwxbb58r.css">
+    <script type="module" crossorigin src="/chinese/assets/index-BwUteQGE-mwxbknt1.js"></script>
+    <link rel="stylesheet" crossorigin href="/chinese/assets/index-DYpuxsiT-mwxbknt1.css">
   </head>
   <body>
     <div id="root"><main><h1>找不到頁面</h1><a href="https://fishpka.github.io/chinese/">返回中文語境首頁</a></main></div>

@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState } from 'react';
+import { useEffect, useLayoutEffect, useMemo, useState } from 'react';
 import { AnimatePresence, motion, useReducedMotion } from 'framer-motion';
 import { loadTeachingDatabase } from './data/teachingDatabase.js';
 import { copy, searchPrompts } from './i18n.js';
@@ -115,6 +115,11 @@ export default function App() {
   const [randomWordsRefreshIndex, setRandomWordsRefreshIndex] = useState(0);
   const [database, setDatabase] = useState({ source: 'Chinese-teaching.txt', total: 0, entries: [], loading: true });
   const { theme, toggleTheme } = useTheme();
+  useLayoutEffect(() => {
+    if (database.loading) return;
+    document.documentElement.classList.remove('app-loading');
+    window.clearTimeout(window.__startupFallback);
+  }, [database.loading]);
   const reduceMotion = useReducedMotion();
   const messages = copy[locale];
   const route = useMemo(() => getRoute(pathname), [pathname]);

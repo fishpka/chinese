@@ -35,6 +35,28 @@
         "inLanguage": ["zh-Hant", "en", "fr"]
       }
     </script>
+    <style id="startup-styles">
+      html { background: #f2ead9; color: #312d27; }
+      body { margin: 0; }
+      html.app-loading #root { visibility: hidden; }
+      html.app-loading::before {
+        content: "載入中文語境…";
+        position: fixed;
+        inset: 0;
+        z-index: 50;
+        display: grid;
+        place-items: center;
+        background: #f2ead9;
+        color: #766d5f;
+        font: 16px/1.6 system-ui, sans-serif;
+      }
+    </style>
+    <script>
+      document.documentElement.classList.add('app-loading');
+      window.__startupFallback = window.setTimeout(function () {
+        document.documentElement.classList.remove('app-loading');
+      }, 4000);
+    </script>
     <title>中文語境｜Chinese Nuance Archive</title>
   </head>
   <body>
